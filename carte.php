@@ -232,26 +232,41 @@ if (is_file($svgPath) && is_readable($svgPath)) {
       .replace(/[\u0300-\u036f]/g, '');
 
   const regionAliases = {
-    champagne: ['champagne', 'alsace', 'lorraine'],
-    bourgogne: ['bourgogne', 'beaujolais', 'jura', 'savoie'],
-    bordeaux: ['bordeaux', 'sud-ouest', 'val-de-loire', 'vallee de la loire', 'vallee-du-rhone', 'languedoc-roussillon', 'provence', 'corse'],
-    spiritueux: ['spiritueux', 'cognac']
+    bordeaux: ['bordeaux'],
+    bourgogne: ['bourgogne'],
+    champagne: ['champagne'],
+    alsace: ['alsace'],
+    lorraine: ['lorraine'],
+    jura: ['jura'],
+    savoie: ['savoie'],
+    beaujolais: ['beaujolais'],
+    rhone: ['vallee-du-rhone', 'rhone', 'vallee du rhone'],
+    loire: ['val-de-loire', 'loire', 'vallee de la loire'],
+    sud_ouest: ['sud-ouest'],
+    languedoc: ['languedoc-roussillon', 'languedoc'],
+    provence: ['provence'],
+    corse: ['corse'],
+    cognac: ['cognac'],
+    spiritueux: ['spiritueux']
   };
 
   const displayNames = {
-    champagne: 'Champagne',
-    bourgogne: 'Bourgogne',
     bordeaux: 'Bordeaux',
+    bourgogne: 'Bourgogne',
+    champagne: 'Champagne',
+    alsace: 'Alsace',
+    lorraine: 'Lorraine',
+    jura: 'Jura',
+    savoie: 'Savoie',
+    beaujolais: 'Beaujolais',
+    rhone: 'Vallée du Rhône',
+    loire: 'Vallée de la Loire',
+    sud_ouest: 'Sud-Ouest',
+    languedoc: 'Languedoc-Roussillon',
+    provence: 'Provence',
+    corse: 'Corse',
+    cognac: 'Cognac',
     spiritueux: 'Spiritueux'
-  };
-
-  const matchRegion = (rawName) => {
-    const key = normalize(rawName);
-
-    for (const [target, aliases] of Object.entries(regionAliases)) {
-      if (aliases.includes(key)) return target;
-    }
-    return null;
   };
 
   const updateListFilter = (selected) => {
@@ -333,7 +348,15 @@ if (is_file($svgPath) && is_readable($svgPath)) {
         zone.getAttribute('id') ||
         '';
 
-      const mapped = matchRegion(raw);
+      const key = normalize(raw);
+      let mapped = null;
+      for (const [target, aliases] of Object.entries(regionAliases)) {
+        if (aliases.includes(key)) {
+          mapped = target;
+          break;
+        }
+      }
+
       if (!mapped) return;
 
       zone.setAttribute('data-wine-region', mapped);

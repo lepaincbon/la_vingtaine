@@ -15,10 +15,41 @@
       .replace(/[\u0300-\u036f]/g, '');
 
   const regionAliases = {
-    champagne: ['champagne', 'alsace', 'lorraine'],
-    bourgogne: ['bourgogne', 'beaujolais', 'jura', 'savoie'],
-    bordeaux: ['bordeaux', 'sud-ouest', 'val-de-loire', 'vallee de la loire', 'vallee-du-rhone', 'languedoc-roussillon', 'provence', 'corse'],
-    spiritueux: ['spiritueux', 'cognac']
+    bordeaux: ['bordeaux'],
+    bourgogne: ['bourgogne'],
+    champagne: ['champagne'],
+    alsace: ['alsace'],
+    lorraine: ['lorraine'],
+    jura: ['jura'],
+    savoie: ['savoie'],
+    beaujolais: ['beaujolais'],
+    rhone: ['vallee-du-rhone', 'rhone', 'vallee du rhone'],
+    loire: ['val-de-loire', 'loire', 'vallee de la loire'],
+    sud_ouest: ['sud-ouest'],
+    languedoc: ['languedoc-roussillon', 'languedoc'],
+    provence: ['provence'],
+    corse: ['corse'],
+    cognac: ['cognac'],
+    spiritueux: ['spiritueux']
+  };
+
+  const displayNames = {
+    bordeaux: 'Bordeaux',
+    bourgogne: 'Bourgogne',
+    champagne: 'Champagne',
+    alsace: 'Alsace',
+    lorraine: 'Lorraine',
+    jura: 'Jura',
+    savoie: 'Savoie',
+    beaujolais: 'Beaujolais',
+    rhone: 'Vallée du Rhône',
+    loire: 'Vallée de la Loire',
+    sud_ouest: 'Sud-Ouest',
+    languedoc: 'Languedoc-Roussillon',
+    provence: 'Provence',
+    corse: 'Corse',
+    cognac: 'Cognac',
+    spiritueux: 'Spiritueux'
   };
 
   const matchRegion = (rawName) => {
@@ -114,7 +145,8 @@
         root.querySelectorAll('.wine-active').forEach((el) => el.classList.remove('wine-active'));
         root.querySelectorAll(`[data-wine-region="${mapped}"]`).forEach((el) => el.classList.add('wine-active'));
 
-        activateRegion(mapped.charAt(0).toUpperCase() + mapped.slice(1));
+        const selectedName = displayNames[mapped] || mapped;
+        activateRegion(selectedName);
       });
     });
   };
