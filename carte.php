@@ -220,6 +220,25 @@ $isProfessional = true;
     spiritueux: ['spiritueux', 'cognac', 'charente', 'charente-maritime', '16', '17']
   };
 
+  const departmentToRegion = {
+    '08': 'champagne', ardennes: 'champagne',
+    '10': 'champagne', aube: 'champagne',
+    '51': 'champagne', marne: 'champagne',
+    '52': 'champagne', 'haute-marne': 'champagne',
+
+    '21': 'bourgogne', 'cote-dor': 'bourgogne',
+    '58': 'bourgogne', nievre: 'bourgogne',
+    '71': 'bourgogne', 'saone-et-loire': 'bourgogne',
+    '89': 'bourgogne', yonne: 'bourgogne',
+
+    '24': 'bordeaux', dordogne: 'bordeaux',
+    '33': 'bordeaux', gironde: 'bordeaux',
+    '47': 'bordeaux', 'lot-et-garonne': 'bordeaux',
+
+    '16': 'spiritueux', charente: 'spiritueux',
+    '17': 'spiritueux', 'charente-maritime': 'spiritueux'
+  };
+
   const displayNames = {
     champagne: 'Champagne',
     bourgogne: 'Bourgogne',
@@ -229,6 +248,10 @@ $isProfessional = true;
 
   const matchRegion = (rawName) => {
     const key = normalize(rawName);
+
+    if (departmentToRegion[key]) return departmentToRegion[key];
+    if (departmentToRegion[key.replace(/^d/, '')]) return departmentToRegion[key.replace(/^d/, '')];
+
     for (const [target, aliases] of Object.entries(regionAliases)) {
       if (aliases.includes(key)) return target;
     }
@@ -264,6 +287,14 @@ $isProfessional = true;
 
   const bindSvgInteractions = (svgDoc) => {
     if (!svgDoc) return;
+
+    const svgRoot = svgDoc.documentElement;
+    if (svgRoot) {
+      svgRoot.setAttribute('preserveAspectRatio', 'xMidYMid meet');
+      svgRoot.style.width = '100%';
+      svgRoot.style.height = '100%';
+      svgRoot.style.display = 'block';
+    }
 
     const style = document.createElementNS('http://www.w3.org/2000/svg', 'style');
     style.textContent = `
