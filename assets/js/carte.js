@@ -15,7 +15,7 @@
       .replace(/[\u0300-\u036f]/g, '');
 
   const regionAliases = {
-    champagne: ['champagne', 'alsace'],
+    champagne: ['champagne', 'alsace', 'lorraine'],
     bourgogne: ['bourgogne', 'beaujolais', 'jura', 'savoie'],
     bordeaux: ['bordeaux', 'sud-ouest', 'val-de-loire', 'vallee de la loire', 'vallee-du-rhone', 'languedoc-roussillon', 'provence', 'corse'],
     spiritueux: ['spiritueux', 'cognac']
