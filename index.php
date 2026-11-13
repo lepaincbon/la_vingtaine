@@ -163,6 +163,18 @@ $products = $catalog[$selectedRegion];
  * En production, cela doit provenir d’un vrai système d’authentification/autorisation.
  */
 $isProfessional = true;
+
+$heroBottles = [];
+foreach ($catalog as $category => $items) {
+    foreach ($items as $item) {
+        $heroBottles[] = [
+            'name' => $item['name'],
+            'type' => $item['type'],
+            'region' => $item['region'],
+            'description' => $item['description']
+        ];
+    }
+}
 ?>
 <!doctype html>
 <html lang="fr">
@@ -195,6 +207,12 @@ $isProfessional = true;
         <div class="hero__text">
             <h1>Sélection B2B de Champagnes, Vins & Spiritueux</h1>
             <p>Pour les restaurants, hôtels et palaces. Un portefeuille premium sélectionné avec un accompagnement professionnel.</p>
+
+            <div id="hero-bottle-description" style="margin-top:20px;transition:filter .35s ease, opacity .35s ease;">
+                <h3 id="hero-bottle-title" style="margin:0 0 6px 0;">-</h3>
+                <p id="hero-bottle-meta" style="margin:0 0 6px 0;opacity:.8;">-</p>
+                <p id="hero-bottle-text" style="margin:0;">-</p>
+            </div>
         </div>
         <div class="hero__canvas-wrap">
             <canvas id="bottle-scene" aria-label="Carrousel 3D de bouteilles"></canvas>
@@ -335,6 +353,7 @@ $isProfessional = true;
     <p>© <?= date('Y') ?> La Vingtaine — B2B uniquement</p>
 </footer>
 
+<script id="hero-bottles-data" type="application/json"><?= json_encode($heroBottles, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES) ?></script>
 <script type="importmap">
 {
   "imports": {
