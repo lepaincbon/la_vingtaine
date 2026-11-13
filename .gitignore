@@ -1,0 +1,52 @@
+# =========================
+# Variables d'environnement & Sécurité
+# =========================
+# IMPORTANT : Ne jamais commit tes clés d'API (Azure, OpenAI, base de données)
+.env
+.env.*
+*.pem
+
+# =========================
+# Aider (Assistant IA)
+# =========================
+# Fichiers d'historique et de cache générés par Aider
+.aider*
+
+# =========================
+# Dépendances Node.js (Frontend / Three.js)
+# =========================
+node_modules/
+npm-debug.log
+yarn-error.log
+
+# =========================
+# Dépendances PHP (Composer)
+# =========================
+vendor/
+
+# =========================
+# Fichiers 3D sources (Optionnel)
+# =========================
+# Ignore les gros fichiers de travail Blender, mais garde les fichiers exportés pour le web (.glb, .gltf)
+*.blend
+*.blend1
+
+# =========================
+# Fichiers Système et Éditeurs
+# =========================
+# Linux / Kubuntu
+*~
+.directory
+.Trash-*
+
+# Mac / Windows (au cas où d'autres devs rejoignent le projet)
+.DS_Store
+Thumbs.db
+
+# Éditeurs de code (VS Code, PhpStorm, etc.)
+.vscode/
+.idea/
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
