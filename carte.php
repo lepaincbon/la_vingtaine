@@ -120,17 +120,16 @@ $isProfessional = true;
             <button id="region-submit-btn" type="submit">Filtrer</button>
         </form>
 
-        <div class="map-layout" style="display:grid;grid-template-columns:1fr;gap:24px;">
-            <div class="map-visual" style="background:#f7f1e8;border:1px solid #d7c7b5;border-radius:16px;padding:20px;">
-                <object
-                    id="france-map-object"
-                    type="image/svg+xml"
-                    data="assets/departements.svg"
-                    width="100%"
-                    height="480"
-                    aria-label="Carte interactive de la France métropolitaine"
-                    style="display:block;background:#fffaf2;border-radius:12px;"
-                ></object>
+        <div class="map-layout">
+            <div class="map-visual">
+                <div class="map-object-wrap">
+                    <object
+                        id="france-map-object"
+                        type="image/svg+xml"
+                        data="assets/departements.svg"
+                        aria-label="Carte interactive de la France métropolitaine"
+                    ></object>
+                </div>
 
                 <div class="regions" style="margin-top:12px;">
                     <?php foreach ($availableRegions as $region): ?>
@@ -197,6 +196,140 @@ $isProfessional = true;
     </section>
 </main>
 
-<script src="assets/js/carte.js"></script>
+<script>
+(() => {
+  const mapObject = document.getElementById('france-map-object');
+  const regionInput = document.getElementById('selected-region-input');
+  const submitBtn = document.getElementById('region-submit-btn');
+  const regionLinks = document.querySelectorAll('[data-region-link]');
+  const productCards = document.querySelectorAll('[data-product-region]');
+  const noResults = document.getElementById('no-products-message');
+
+  const normalize = (value) =>
+    (value || '')
+      .toString()
+      .trim()
+      .toLowerCase()
+      .normalize('NFD')
+      .replace(/[\u0300-\u036f]/g, '');
+
+  const regionAliases = {
+    champagne: ['champagne', 'grand est', 'marne', 'aube', 'haute-marne', 'ardennes', '51', '10', '52', '08'],
+    bourgogne: ['bourgogne', 'bourgogne-franche-comte', 'cote-dor', 'yonne', 'saone-et-loire', 'nievre', '21', '89', '71', '58'],
+    bordeaux: ['bordeaux', 'nouvelle-aquitaine', 'gironde', 'dordogne', 'lot-et-garonne', '33', '24', '47'],
+    spiritueux: ['spiritueux', 'cognac', 'charente', 'charente-maritime', '16', '17']
+  };
+
+  const displayNames = {
+    champagne: 'Champagne',
+    bourgogne: 'Bourgogne',
+    bordeaux: 'Bordeaux',
+    spiritueux: 'Spiritueux'
+  };
+
+  const matchRegion = (rawName) => {
+    const key = normalize(rawName);
+    for (const [target, aliases] of Object.entries(regionAliases)) {
+      if (aliases.includes(key)) return target;
+    }
+    return null;
+  };
+
+  const updateListFilter = (selected) => {
+    let visibleCount = 0;
+    productCards.forEach((card) => {
+      const cardRegion = normalize(card.getAttribute('data-product-region'));
+      const visible = selected === '' || cardRegion === selected;
+      card.style.display = visible ? '' : 'none';
+      if (visible) visibleCount += 1;
+    });
+
+    if (noResults) {
+      noResults.style.display = visibleCount === 0 ? 'block' : 'none';
+    }
+
+    regionLinks.forEach((link) => {
+      const linkRegion = normalize(link.getAttribute('data-region-link'));
+      link.classList.toggle('is-active', linkRegion === selected);
+    });
+  };
+
+  const activateRegion = (regionName) => {
+    const normalized = normalize(regionName);
+    if (!normalized || !regionInput) return;
+    regionInput.value = regionName;
+    updateListFilter(normalized);
+    if (submitBtn) submitBtn.click();
+  };
+
+  const bindSvgInteractions = (svgDoc) => {
+    if (!svgDoc) return;
+
+    const style = document.createElementNS('http://www.w3.org/2000/svg', 'style');
+    style.textContent = `
+      path[data-wine-region], g[data-wine-region], path.wine-clickable, g.wine-clickable {
+        cursor: pointer;
+        transition: fill .2s ease, opacity .2s ease, stroke .2s ease;
+      }
+      path[data-wine-region]:hover, g[data-wine-region]:hover,
+      path.wine-clickable:hover, g.wine-clickable:hover {
+        fill: #d8c3ab !important;
+        stroke: #6e4530 !important;
+      }
+      .wine-active {
+        fill: #6e4530 !important;
+        stroke: #4c2f1f !important;
+      }
+    `;
+    svgDoc.documentElement.appendChild(style);
+
+    const candidates = svgDoc.querySelectorAll('path, g');
+    candidates.forEach((zone) => {
+      const raw =
+        zone.getAttribute('data-name') ||
+        zone.getAttribute('inkscape:label') ||
+        zone.getAttribute('title') ||
+        zone.getAttribute('id') ||
+        '';
+
+      const mapped = matchRegion(raw);
+      if (!mapped) return;
+
+      zone.setAttribute('data-wine-region', mapped);
+      zone.classList.add('wine-clickable');
+
+      zone.addEventListener('click', (e) => {
+        e.preventDefault();
+        const selectedName = displayNames[mapped] || mapped;
+        activateRegion(selectedName);
+
+        svgDoc.querySelectorAll('.wine-active').forEach((el) => el.classList.remove('wine-active'));
+        zone.classList.add('wine-active');
+      });
+    });
+  };
+
+  const params = new URLSearchParams(window.location.search);
+  const current = normalize(params.get('region') || '');
+  if (current) {
+    updateListFilter(current);
+  }
+
+  if (mapObject) {
+    mapObject.addEventListener('load', () => {
+      const svgDoc = mapObject.contentDocument;
+      bindSvgInteractions(svgDoc);
+    });
+  }
+
+  regionLinks.forEach((link) => {
+    link.addEventListener('click', (e) => {
+      e.preventDefault();
+      const value = link.getAttribute('data-region-link') || '';
+      activateRegion(value);
+    });
+  });
+})();
+</script>
 
 <?php require_once __DIR__ . '/includes/footer.php'; ?>

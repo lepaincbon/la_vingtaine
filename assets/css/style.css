@@ -186,6 +186,37 @@ a {
   color: var(--brown-900);
 }
 
+.map-layout {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 24px;
+}
+
+.map-visual {
+  background: #f7f1e8;
+  border: 1px solid #d7c7b5;
+  border-radius: 16px;
+  padding: 20px;
+}
+
+.map-object-wrap {
+  max-width: 600px;
+  width: 100%;
+  margin: 0 auto;
+}
+
+#france-map-object {
+  max-width: 600px;
+  width: 100%;
+  height: auto;
+  min-height: 520px;
+  display: block;
+  margin: 0 auto;
+  background: #fffaf2;
+  border-radius: 12px;
+  border: 1px solid rgba(76, 47, 31, 0.12);
+}
+
 .regions {
   display: flex;
   flex-wrap: wrap;
@@ -456,5 +487,9 @@ button:disabled {
 
   .selection-subtotal {
     margin-top: 0.3rem;
+  }
+
+  #france-map-object {
+    min-height: 420px;
   }
 }
