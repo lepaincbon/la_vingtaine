@@ -15,10 +15,10 @@
       .replace(/[\u0300-\u036f]/g, '');
 
   const regionAliases = {
-    champagne: ['champagne', 'alsace', 'lorraine', 'grand est', 'marne', 'aube', 'haute-marne', 'ardennes'],
-    bourgogne: ['bourgogne', 'beaujolais', 'jura', 'savoie', 'bourgogne-franche-comte', 'cote-dor', 'yonne', 'saone-et-loire', 'nievre'],
-    bordeaux: ['bordeaux', 'sud-ouest', 'val-de-loire', 'vallee de la loire', 'vallee-du-rhone', 'languedoc-roussillon', 'provence', 'corse', 'nouvelle-aquitaine', 'gironde', 'dordogne', 'lot-et-garonne'],
-    spiritueux: ['spiritueux', 'cognac', 'charente', 'charente-maritime']
+    champagne: ['champagne', 'alsace'],
+    bourgogne: ['bourgogne', 'beaujolais', 'jura', 'savoie'],
+    bordeaux: ['bordeaux', 'sud-ouest', 'val-de-loire', 'vallee de la loire', 'vallee-du-rhone', 'languedoc-roussillon', 'provence', 'corse'],
+    spiritueux: ['spiritueux', 'cognac']
   };
 
   const matchRegion = (rawName) => {
@@ -65,14 +65,21 @@
   const bindSvgInteractions = (svgDoc) => {
     if (!svgDoc) return;
 
-    const selectors = [
-      '[id]',
-      '[data-name]',
-      '[inkscape\\:label]',
-      '[title]'
-    ];
+    const style = document.createElementNS('http://www.w3.org/2000/svg', 'style');
+    style.textContent = `
+      path, g {
+        pointer-events: none;
+      }
+      [data-wine-region] {
+        pointer-events: auto;
+        cursor: pointer;
+      }
+    `;
+    if (svgDoc.documentElement) {
+      svgDoc.documentElement.appendChild(style);
+    }
 
-    const zones = svgDoc.querySelectorAll(selectors.join(','));
+    const zones = svgDoc.querySelectorAll('.wine-zone');
     zones.forEach((zone) => {
       const raw =
         zone.getAttribute('data-name') ||
@@ -84,6 +91,7 @@
       const mapped = matchRegion(raw);
       if (!mapped) return;
 
+      zone.setAttribute('data-wine-region', mapped);
       zone.style.cursor = 'pointer';
       zone.style.transition = 'opacity .2s ease, filter .2s ease';
       zone.addEventListener('mouseenter', () => {
@@ -96,6 +104,7 @@
       });
       zone.addEventListener('click', (e) => {
         e.preventDefault();
+        e.stopPropagation();
         activateRegion(mapped.charAt(0).toUpperCase() + mapped.slice(1));
       });
     });

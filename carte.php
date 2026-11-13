@@ -232,29 +232,10 @@ if (is_file($svgPath) && is_readable($svgPath)) {
       .replace(/[\u0300-\u036f]/g, '');
 
   const regionAliases = {
-    champagne: ['champagne', 'alsace', 'lorraine', 'grand est', 'marne', 'aube', 'haute-marne', 'ardennes', '51', '10', '52', '08'],
-    bourgogne: ['bourgogne', 'beaujolais', 'jura', 'savoie', 'bourgogne-franche-comte', 'cote-dor', 'yonne', 'saone-et-loire', 'nievre', '21', '89', '71', '58'],
-    bordeaux: ['bordeaux', 'sud-ouest', 'val-de-loire', 'vallee de la loire', 'vallee-du-rhone', 'languedoc-roussillon', 'provence', 'corse', 'aquitaine', 'nouvelle-aquitaine', 'gironde', 'dordogne', 'lot-et-garonne', '33', '24', '47'],
-    spiritueux: ['spiritueux', 'cognac', 'charente', 'charente-maritime', '16', '17', 'poitou-charentes']
-  };
-
-  const departmentToRegion = {
-    '08': 'champagne', ardennes: 'champagne',
-    '10': 'champagne', aube: 'champagne',
-    '51': 'champagne', marne: 'champagne',
-    '52': 'champagne', 'haute-marne': 'champagne',
-
-    '21': 'bourgogne', 'cote-dor': 'bourgogne',
-    '58': 'bourgogne', nievre: 'bourgogne',
-    '71': 'bourgogne', 'saone-et-loire': 'bourgogne',
-    '89': 'bourgogne', yonne: 'bourgogne',
-
-    '24': 'bordeaux', dordogne: 'bordeaux',
-    '33': 'bordeaux', gironde: 'bordeaux',
-    '47': 'bordeaux', 'lot-et-garonne': 'bordeaux',
-
-    '16': 'spiritueux', charente: 'spiritueux',
-    '17': 'spiritueux', 'charente-maritime': 'spiritueux'
+    champagne: ['champagne', 'alsace'],
+    bourgogne: ['bourgogne', 'beaujolais', 'jura', 'savoie'],
+    bordeaux: ['bordeaux', 'sud-ouest', 'val-de-loire', 'vallee de la loire', 'vallee-du-rhone', 'languedoc-roussillon', 'provence', 'corse'],
+    spiritueux: ['spiritueux', 'cognac']
   };
 
   const displayNames = {
@@ -266,9 +247,6 @@ if (is_file($svgPath) && is_readable($svgPath)) {
 
   const matchRegion = (rawName) => {
     const key = normalize(rawName);
-
-    if (departmentToRegion[key]) return departmentToRegion[key];
-    if (departmentToRegion[key.replace(/^d/, '')]) return departmentToRegion[key.replace(/^d/, '')];
 
     for (const [target, aliases] of Object.entries(regionAliases)) {
       if (aliases.includes(key)) return target;
@@ -338,11 +316,15 @@ if (is_file($svgPath) && is_readable($svgPath)) {
 
     const style = document.createElementNS('http://www.w3.org/2000/svg', 'style');
     style.textContent = `
-      path, [data-wine-region] {
+      path, g {
+        pointer-events: none;
+      }
+      [data-wine-region] {
+        pointer-events: auto;
         cursor: pointer;
         transition: fill .2s ease, opacity .2s ease, stroke .2s ease;
       }
-      path:hover, [data-wine-region]:hover {
+      [data-wine-region]:hover {
         fill: #d8c3ab !important;
         stroke: #6e4530 !important;
       }
@@ -353,8 +335,8 @@ if (is_file($svgPath) && is_readable($svgPath)) {
     `;
     svgRoot.appendChild(style);
 
-    const candidates = svgRoot.querySelectorAll('path, g');
-    candidates.forEach((zone) => {
+    const wineZones = svgRoot.querySelectorAll('.wine-zone');
+    wineZones.forEach((zone) => {
       const raw =
         zone.getAttribute('data-name') ||
         zone.getAttribute('inkscape:label') ||
@@ -370,6 +352,7 @@ if (is_file($svgPath) && is_readable($svgPath)) {
 
       zone.addEventListener('click', (e) => {
         e.preventDefault();
+        e.stopPropagation();
         const selectedName = displayNames[mapped] || mapped;
         activateRegion(selectedName);
       });
