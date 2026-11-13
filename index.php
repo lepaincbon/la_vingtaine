@@ -4,8 +4,8 @@ declare(strict_types=1);
 session_start();
 
 /**
- * Base catalog data (sample structure ready to scale to 150-200 references).
- * Prices are visible only for professional users.
+ * Données de catalogue (structure d'exemple prête à évoluer vers 150-200 références).
+ * Les prix sont visibles uniquement pour les professionnels.
  */
 $catalog = [
     'Champagne' => [
@@ -19,7 +19,7 @@ $catalog = [
             'grape' => 'Pinot Noir, Chardonnay',
             'price' => 42.00,
             'exception' => false,
-            'description' => 'Fine bubbles, white fruit notes, and mineral finish.'
+            'description' => 'Bulles fines, notes de fruits blancs et finale minérale.'
         ],
         [
             'id' => 'ch-002',
@@ -31,7 +31,7 @@ $catalog = [
             'grape' => '100% Chardonnay',
             'price' => 98.00,
             'exception' => true,
-            'description' => 'Exceptional vintage cuvée with long aging potential.'
+            'description' => 'Cuvée millésimée exceptionnelle avec un grand potentiel de garde.'
         ]
     ],
     'Bourgogne' => [
@@ -45,7 +45,7 @@ $catalog = [
             'grape' => 'Chardonnay',
             'price' => 29.00,
             'exception' => false,
-            'description' => 'Crisp and elegant profile with citrus and chalky notes.'
+            'description' => 'Profil vif et élégant, aux notes d’agrumes et de craie.'
         ]
     ],
     'Bordeaux' => [
@@ -59,7 +59,7 @@ $catalog = [
             'grape' => 'Merlot, Cabernet Franc',
             'price' => 46.00,
             'exception' => false,
-            'description' => 'Silky tannins, black fruits, and refined oak.'
+            'description' => 'Tanins soyeux, fruits noirs et boisé raffiné.'
         ]
     ],
     'Spiritueux' => [
@@ -73,7 +73,7 @@ $catalog = [
             'grape' => 'Ugni Blanc',
             'price' => 120.00,
             'exception' => false,
-            'description' => 'Complex aromas of dried fruit, vanilla and spice.'
+            'description' => 'Arômes complexes de fruits secs, vanille et épices.'
         ]
     ]
 ];
@@ -102,10 +102,10 @@ if ($action === 'add_to_cart') {
             ];
         }
         $_SESSION['cart'][$id]['qty'] += $qty;
-        $message = 'Product added to cart.';
+        $message = 'Produit ajouté au panier.';
         $messageType = 'success';
     } else {
-        $message = 'Unable to add this product.';
+        $message = 'Impossible d’ajouter ce produit.';
         $messageType = 'error';
     }
 }
@@ -114,7 +114,7 @@ if ($action === 'remove_from_cart') {
     $id = (string)($_POST['id'] ?? '');
     if ($id !== '' && isset($_SESSION['cart'][$id])) {
         unset($_SESSION['cart'][$id]);
-        $message = 'Product removed from cart.';
+        $message = 'Produit retiré du panier.';
         $messageType = 'success';
     }
 }
@@ -124,7 +124,7 @@ if ($action === 'update_qty') {
     $qty = max(1, (int)($_POST['qty'] ?? 1));
     if ($id !== '' && isset($_SESSION['cart'][$id])) {
         $_SESSION['cart'][$id]['qty'] = $qty;
-        $message = 'Cart updated.';
+        $message = 'Panier mis à jour.';
         $messageType = 'success';
     }
 }
@@ -137,13 +137,13 @@ foreach ($cartItems as $item) {
 
 if ($action === 'validate_order') {
     if ($cartTotal < 300) {
-        $message = 'Order blocked: minimum order amount is €300 (B2B only).';
+        $message = 'Commande bloquée : le minimum de commande est de 300 € (B2B uniquement).';
         $messageType = 'error';
     } elseif (count($cartItems) === 0) {
-        $message = 'Your cart is empty.';
+        $message = 'Votre panier est vide.';
         $messageType = 'error';
     } else {
-        $message = 'Order request received. Our team will contact you shortly.';
+        $message = 'Demande de commande reçue. Notre équipe vous contactera rapidement.';
         $messageType = 'success';
         $_SESSION['cart'] = [];
         $cartItems = [];
@@ -159,18 +159,18 @@ if (!isset($catalog[$selectedRegion])) {
 $products = $catalog[$selectedRegion];
 
 /**
- * Mock professional flag.
- * In production, this should come from real authentication/authorization.
+ * Indicateur professionnel simulé.
+ * En production, cela doit provenir d’un vrai système d’authentification/autorisation.
  */
 $isProfessional = true;
 ?>
 <!doctype html>
-<html lang="en">
+<html lang="fr">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>La Vingtaine | B2B Champagne, Wine & Spirits</title>
-    <meta name="description" content="La Vingtaine - B2B agency for champagne, wine and spirits, for restaurants, hotels and palaces.">
+    <title>La Vingtaine | Agence B2B Champagne, Vins & Spiritueux</title>
+    <meta name="description" content="La Vingtaine - Agence B2B de champagne, vins et spiritueux, pour restaurants, hôtels et palaces.">
     <link rel="preconnect" href="https://cdn.jsdelivr.net">
     <link rel="stylesheet" href="assets/css/style.css">
 </head>
@@ -182,9 +182,9 @@ $isProfessional = true;
 <header class="header">
     <div class="logo">La Vingtaine</div>
     <nav class="nav">
-        <a href="#catalog">Catalog</a>
-        <a href="#exception">Exceptional Wine</a>
-        <a href="#delivery">Delivery</a>
+        <a href="#catalog">Catalogue</a>
+        <a href="#exception">Vin d’Exception</a>
+        <a href="#delivery">Livraison</a>
         <a href="#contact">Contact</a>
         <a href="https://www.instagram.com/" target="_blank" rel="noopener noreferrer">Instagram</a>
     </nav>
@@ -193,16 +193,16 @@ $isProfessional = true;
 <main>
     <section class="hero">
         <div class="hero__text">
-            <h1>B2B Selection of Champagne, Wines & Spirits</h1>
-            <p>For restaurants, hotels and palaces. A curated, premium portfolio and professional support.</p>
+            <h1>Sélection B2B de Champagnes, Vins & Spiritueux</h1>
+            <p>Pour les restaurants, hôtels et palaces. Un portefeuille premium sélectionné avec un accompagnement professionnel.</p>
         </div>
         <div class="hero__canvas-wrap">
-            <canvas id="bottle-scene" aria-label="3D bottle carousel"></canvas>
+            <canvas id="bottle-scene" aria-label="Carrousel 3D de bouteilles"></canvas>
         </div>
     </section>
 
     <section id="catalog" class="section">
-        <h2>Catalog by Wine Regions</h2>
+        <h2>Catalogue par régions viticoles</h2>
         <div class="regions">
             <?php foreach ($regions as $region): ?>
                 <a class="region-pill <?= $region === $selectedRegion ? 'is-active' : '' ?>"
@@ -221,14 +221,14 @@ $isProfessional = true;
                         <?= htmlspecialchars($product['volume'], ENT_QUOTES, 'UTF-8') ?> •
                         <?= htmlspecialchars($product['abv'], ENT_QUOTES, 'UTF-8') ?>
                     </p>
-                    <p><strong>Region:</strong> <?= htmlspecialchars($product['region'], ENT_QUOTES, 'UTF-8') ?></p>
-                    <p><strong>Grape:</strong> <?= htmlspecialchars($product['grape'], ENT_QUOTES, 'UTF-8') ?></p>
+                    <p><strong>Région :</strong> <?= htmlspecialchars($product['region'], ENT_QUOTES, 'UTF-8') ?></p>
+                    <p><strong>Cépage :</strong> <?= htmlspecialchars($product['grape'], ENT_QUOTES, 'UTF-8') ?></p>
                     <p><?= htmlspecialchars($product['description'], ENT_QUOTES, 'UTF-8') ?></p>
 
                     <?php if ($isProfessional): ?>
-                        <p class="product-price">Pro price: €<?= number_format((float)$product['price'], 2) ?></p>
+                        <p class="product-price">Tarif pro : €<?= number_format((float)$product['price'], 2) ?></p>
                     <?php else: ?>
-                        <p class="product-price locked">Price reserved for professionals</p>
+                        <p class="product-price locked">Prix réservé aux professionnels</p>
                     <?php endif; ?>
 
                     <?php if ($isProfessional): ?>
@@ -238,10 +238,10 @@ $isProfessional = true;
                             <input type="hidden" name="name" value="<?= htmlspecialchars($product['name'], ENT_QUOTES, 'UTF-8') ?>">
                             <input type="hidden" name="price" value="<?= htmlspecialchars((string)$product['price'], ENT_QUOTES, 'UTF-8') ?>">
                             <label>
-                                Qty
+                                Qté
                                 <input type="number" name="qty" min="1" value="1">
                             </label>
-                            <button type="submit">Add to cart</button>
+                            <button type="submit">Ajouter au panier</button>
                         </form>
                     <?php endif; ?>
                 </article>
@@ -250,12 +250,12 @@ $isProfessional = true;
     </section>
 
     <section id="exception" class="section highlight">
-        <h2>Featured Exceptional Selection</h2>
-        <p><strong>Cuvée Prestige Millésimée 2016</strong> — an outstanding and rare reference, ideal for premium wine lists and luxury hospitality venues.</p>
+        <h2>Sélection exceptionnelle mise en avant</h2>
+        <p><strong>Cuvée Prestige Millésimée 2016</strong> — une référence rare et remarquable, idéale pour les cartes premium et les établissements hôteliers de luxe.</p>
     </section>
 
     <section class="section">
-        <h2>B2B Cart</h2>
+        <h2>Panier B2B</h2>
 
         <?php if ($message !== ''): ?>
             <div class="message <?= htmlspecialchars($messageType, ENT_QUOTES, 'UTF-8') ?>">
@@ -269,73 +269,79 @@ $isProfessional = true;
                     <div class="cart-item">
                         <div>
                             <strong><?= htmlspecialchars($item['name'], ENT_QUOTES, 'UTF-8') ?></strong>
-                            <div>€<?= number_format((float)$item['price'], 2) ?> / unit</div>
+                            <div>€<?= number_format((float)$item['price'], 2) ?> / unité</div>
                         </div>
                         <form method="post" class="inline-form">
                             <input type="hidden" name="action" value="update_qty">
                             <input type="hidden" name="id" value="<?= htmlspecialchars($item['id'], ENT_QUOTES, 'UTF-8') ?>">
                             <input type="number" name="qty" min="1" value="<?= (int)$item['qty'] ?>">
-                            <button type="submit">Update</button>
+                            <button type="submit">Mettre à jour</button>
                         </form>
                         <form method="post" class="inline-form">
                             <input type="hidden" name="action" value="remove_from_cart">
                             <input type="hidden" name="id" value="<?= htmlspecialchars($item['id'], ENT_QUOTES, 'UTF-8') ?>">
-                            <button type="submit" class="danger">Remove</button>
+                            <button type="submit" class="danger">Retirer</button>
                         </form>
                     </div>
                 <?php endforeach; ?>
             </div>
         <?php else: ?>
-            <p>Your cart is empty.</p>
+            <p>Votre panier est vide.</p>
         <?php endif; ?>
 
         <div class="cart-total">
-            <strong>Total:</strong> €<?= number_format($cartTotal, 2) ?>
+            <strong>Total :</strong> €<?= number_format($cartTotal, 2) ?>
         </div>
-        <p class="cart-rule">Minimum order amount: <strong>€300</strong> (required to validate).</p>
+        <p class="cart-rule">Montant minimum de commande : <strong>300 €</strong> (obligatoire pour valider).</p>
 
         <form method="post">
             <input type="hidden" name="action" value="validate_order">
-            <button type="submit" class="primary">Validate order request</button>
+            <button type="submit" class="primary">Valider la demande de commande</button>
         </form>
     </section>
 
     <section id="delivery" class="section">
-        <h2>Delivery Information</h2>
-        <p>Standard delivery time: <strong>3 to 5 business days</strong>.</p>
+        <h2>Informations de livraison</h2>
+        <p>Délai de livraison standard : <strong>3 à 5 jours ouvrés</strong>.</p>
     </section>
 
     <section id="contact" class="section">
         <h2>Contact</h2>
-        <p>Need a specific reference or supplier coordination?</p>
+        <p>Besoin d’une référence spécifique ou d’une coordination fournisseur ?</p>
         <div class="contact-actions">
-            <a class="primary-link" href="mailto:contact@lavingtaine.fr">Contact us by email</a>
-            <a class="secondary-link" href="tel:+33100000000">Call supplier support</a>
+            <a class="primary-link" href="mailto:contact@lavingtaine.fr">Nous contacter par e-mail</a>
+            <a class="secondary-link" href="tel:+33100000000">Appeler le support fournisseur</a>
         </div>
 
         <form class="contact-form" method="post" action="#">
             <label>
-                Company
-                <input type="text" name="company" placeholder="Your company name">
+                Société
+                <input type="text" name="company" placeholder="Nom de votre société">
             </label>
             <label>
-                Email
-                <input type="email" name="email" placeholder="pro@company.com">
+                E-mail
+                <input type="email" name="email" placeholder="pro@societe.com">
             </label>
             <label>
                 Message
-                <textarea name="message" rows="4" placeholder="Your request"></textarea>
+                <textarea name="message" rows="4" placeholder="Votre demande"></textarea>
             </label>
-            <button type="button">Send request</button>
+            <button type="button">Envoyer la demande</button>
         </form>
     </section>
 </main>
 
 <footer class="footer">
-    <p>© <?= date('Y') ?> La Vingtaine — B2B only</p>
+    <p>© <?= date('Y') ?> La Vingtaine — B2B uniquement</p>
 </footer>
 
-<script src="https://cdn.jsdelivr.net/npm/three@0.161.0/build/three.min.js"></script>
-<script src="assets/js/main.js"></script>
+<script type="importmap">
+{
+  "imports": {
+    "three": "./node_modules/three/build/three.module.js"
+  }
+}
+</script>
+<script type="module" src="assets/js/main.js"></script>
 </body>
 </html>
