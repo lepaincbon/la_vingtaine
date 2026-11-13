@@ -61,7 +61,7 @@ if ($action === 'add_to_cart') {
         $_SESSION['cart'][$id]['name'] = (string)$product['name'];
         $_SESSION['cart'][$id]['qty'] += $qty;
 
-        $message = 'Produit ajouté au panier.';
+        $message = 'Vin ajouté à votre sélection.';
         $messageType = 'success';
     } else {
         $message = 'Produit introuvable ou indisponible.';
@@ -73,7 +73,7 @@ if ($action === 'remove_from_cart') {
     $id = (string)($_POST['id'] ?? '');
     if ($id !== '' && isset($_SESSION['cart'][$id])) {
         unset($_SESSION['cart'][$id]);
-        $message = 'Produit retiré du panier.';
+        $message = 'Vin retiré de votre sélection.';
         $messageType = 'success';
     }
 }
@@ -83,7 +83,7 @@ if ($action === 'update_qty') {
     $qty = max(1, (int)($_POST['qty'] ?? 1));
     if ($id !== '' && isset($_SESSION['cart'][$id])) {
         $_SESSION['cart'][$id]['qty'] = $qty;
-        $message = 'Panier mis à jour.';
+        $message = 'Votre sélection a été mise à jour.';
         $messageType = 'success';
     }
 }
@@ -93,13 +93,15 @@ $cartTotal = 0.0;
 foreach ($cartItems as $item) {
     $cartTotal += (float)$item['price'] * (int)$item['qty'];
 }
+$minimumOrderAmount = 300.0;
+$remainingAmount = max(0.0, $minimumOrderAmount - $cartTotal);
 
 if ($action === 'validate_order') {
-    if ($cartTotal < 300) {
-        $message = 'Commande bloquée : le minimum de commande est de 300 € (B2B uniquement).';
+    if ($cartTotal < $minimumOrderAmount) {
+        $message = 'Validation impossible : minimum de commande B2B de 300,00 € non atteint.';
         $messageType = 'error';
     } elseif (count($cartItems) === 0) {
-        $message = 'Votre panier est vide.';
+        $message = 'Votre sélection est vide.';
         $messageType = 'error';
     } else {
         if ($usingDb) {
@@ -129,6 +131,7 @@ if ($action === 'validate_order') {
         $_SESSION['cart'] = [];
         $cartItems = [];
         $cartTotal = 0.0;
+        $remainingAmount = $minimumOrderAmount;
     }
 }
 
@@ -190,6 +193,7 @@ foreach ($allProducts as $row) {
     <div class="logo">La Vingtaine</div>
     <nav class="nav">
         <a href="#catalog">Catalogue</a>
+        <a href="#selection-b2b" class="nav-selection-link">Liste des vins sélectionnés (<?= count($cartItems) ?>)</a>
         <a href="#exception">Vin d’Exception</a>
         <a href="#delivery">Livraison</a>
         <a href="#contact">Contact</a>
@@ -243,7 +247,7 @@ foreach ($allProducts as $row) {
                     <p><?= htmlspecialchars($product['description'], ENT_QUOTES, 'UTF-8') ?></p>
 
                     <?php if ($isProfessional): ?>
-                        <p class="product-price">Tarif pro : €<?= number_format((float)$product['price'], 2) ?></p>
+                        <p class="product-price">Tarif pro HT : €<?= number_format((float)$product['price'], 2) ?></p>
                     <?php else: ?>
                         <p class="product-price locked">Prix réservé aux professionnels</p>
                     <?php endif; ?>
@@ -256,7 +260,7 @@ foreach ($allProducts as $row) {
                                 Qté
                                 <input type="number" name="qty" min="1" value="1">
                             </label>
-                            <button type="submit">Ajouter au panier</button>
+                            <button type="submit">Ajouter à la sélection</button>
                         </form>
                     <?php endif; ?>
                 </article>
@@ -264,13 +268,8 @@ foreach ($allProducts as $row) {
         </div>
     </section>
 
-    <section id="exception" class="section highlight">
-        <h2>Sélection exceptionnelle mise en avant</h2>
-        <p><strong>Cuvée Prestige Millésimée 2016</strong> — une référence rare et remarquable, idéale pour les cartes premium et les établissements hôteliers de luxe.</p>
-    </section>
-
-    <section class="section">
-        <h2>Panier B2B</h2>
+    <section id="selection-b2b" class="section selection-section">
+        <h2>Liste des vins sélectionnés</h2>
 
         <?php if ($message !== ''): ?>
             <div class="message <?= htmlspecialchars($messageType, ENT_QUOTES, 'UTF-8') ?>">
@@ -281,38 +280,58 @@ foreach ($allProducts as $row) {
         <?php if (count($cartItems) > 0): ?>
             <div class="cart-list">
                 <?php foreach ($cartItems as $item): ?>
+                    <?php $lineSubtotal = (float)$item['price'] * (int)$item['qty']; ?>
                     <div class="cart-item">
-                        <div>
-                            <strong><?= htmlspecialchars($item['name'], ENT_QUOTES, 'UTF-8') ?></strong>
-                            <div>€<?= number_format((float)$item['price'], 2) ?> / unité</div>
+                        <div class="selection-item-main">
+                            <h3 class="selection-item-name"><?= htmlspecialchars($item['name'], ENT_QUOTES, 'UTF-8') ?></h3>
+                            <div class="selection-item-pricing">Prix unitaire HT/Pro : €<?= number_format((float)$item['price'], 2) ?></div>
+                            <div class="selection-subtotal">Sous-total : €<?= number_format($lineSubtotal, 2) ?></div>
                         </div>
                         <form method="post" class="inline-form">
                             <input type="hidden" name="action" value="update_qty">
                             <input type="hidden" name="id" value="<?= htmlspecialchars($item['id'], ENT_QUOTES, 'UTF-8') ?>">
-                            <input type="number" name="qty" min="1" value="<?= (int)$item['qty'] ?>">
+                            <label>
+                                Quantité
+                                <input type="number" name="qty" min="1" value="<?= (int)$item['qty'] ?>">
+                            </label>
                             <button type="submit">Mettre à jour</button>
                         </form>
                         <form method="post" class="inline-form">
                             <input type="hidden" name="action" value="remove_from_cart">
                             <input type="hidden" name="id" value="<?= htmlspecialchars($item['id'], ENT_QUOTES, 'UTF-8') ?>">
-                            <button type="submit" class="danger">Retirer</button>
+                            <button type="submit" class="danger">Supprimer</button>
                         </form>
                     </div>
                 <?php endforeach; ?>
             </div>
         <?php else: ?>
-            <p>Votre panier est vide.</p>
+            <p>Votre sélection est vide.</p>
         <?php endif; ?>
 
-        <div class="cart-total">
-            <strong>Total :</strong> €<?= number_format($cartTotal, 2) ?>
+        <div class="selection-summary">
+            <p><strong>Montant total HT :</strong> €<?= number_format($cartTotal, 2) ?></p>
+            <p class="cart-rule"><strong>Minimum de commande :</strong> 300,00 € pour valider la sélection.</p>
+            <?php if ($remainingAmount > 0): ?>
+                <p class="cart-rule"><strong>Montant restant pour atteindre le minimum :</strong> €<?= number_format($remainingAmount, 2) ?></p>
+            <?php else: ?>
+                <p class="cart-rule"><strong>Seuil minimum atteint :</strong> vous pouvez valider la sélection.</p>
+            <?php endif; ?>
         </div>
-        <p class="cart-rule">Montant minimum de commande : <strong>300 €</strong> (obligatoire pour valider).</p>
 
-        <form method="post">
-            <input type="hidden" name="action" value="validate_order">
-            <button type="submit" class="primary">Valider la demande de commande</button>
-        </form>
+        <div class="selection-actions">
+            <form method="post">
+                <input type="hidden" name="action" value="validate_order">
+                <button type="submit" class="primary" <?= ($cartTotal < $minimumOrderAmount || count($cartItems) === 0) ? 'disabled' : '' ?>>
+                    Valider la sélection
+                </button>
+            </form>
+            <a class="secondary-button-link" href="#contact">Contacter le fournisseur pour une demande spécifique</a>
+        </div>
+    </section>
+
+    <section id="exception" class="section highlight">
+        <h2>Sélection exceptionnelle mise en avant</h2>
+        <p><strong>Cuvée Prestige Millésimée 2016</strong> — une référence rare et remarquable, idéale pour les cartes premium et les établissements hôteliers de luxe.</p>
     </section>
 
     <section id="delivery" class="section">

@@ -94,6 +94,16 @@ a {
   background: rgba(110, 69, 48, 0.12);
 }
 
+.nav a.nav-selection-link {
+  background: var(--brown-900);
+  color: var(--offwhite);
+  font-weight: 600;
+}
+
+.nav a.nav-selection-link:hover {
+  background: #5a3725;
+}
+
 .hero-scroll {
   height: 400vh;
   position: relative;
@@ -167,6 +177,8 @@ a {
 
 .section {
   padding: 2.2rem min(4vw, 2.4rem);
+  position: relative;
+  z-index: 1;
 }
 
 .section h2 {
@@ -264,6 +276,12 @@ button:hover {
   filter: brightness(1.08);
 }
 
+button:disabled {
+  cursor: not-allowed;
+  filter: grayscale(0.2);
+  opacity: 0.65;
+}
+
 .primary {
   background: var(--brown-900);
 }
@@ -295,6 +313,10 @@ button:hover {
   color: var(--error);
 }
 
+.selection-section {
+  scroll-margin-top: 90px;
+}
+
 .cart-list {
   display: grid;
   gap: 0.65rem;
@@ -306,9 +328,28 @@ button:hover {
   border-radius: 10px;
   padding: 0.7rem;
   display: grid;
-  grid-template-columns: 1fr auto auto;
+  grid-template-columns: minmax(0, 1fr) auto auto;
   gap: 0.6rem;
   align-items: center;
+}
+
+.selection-item-main {
+  min-width: 0;
+}
+
+.selection-item-name {
+  margin: 0 0 0.2rem 0;
+}
+
+.selection-item-pricing {
+  color: #5f4b3f;
+  font-size: 0.92rem;
+}
+
+.selection-subtotal {
+  font-weight: 700;
+  color: var(--brown-900);
+  white-space: nowrap;
 }
 
 .inline-form {
@@ -328,6 +369,34 @@ button:hover {
 
 .cart-rule {
   color: #5f4b3f;
+}
+
+.selection-summary {
+  margin-top: 1rem;
+  padding: 0.9rem;
+  border-radius: 12px;
+  border: 1px solid rgba(76, 47, 31, 0.15);
+  background: #fffdfb;
+}
+
+.selection-summary p {
+  margin: 0.25rem 0;
+}
+
+.selection-actions {
+  margin-top: 1rem;
+  display: flex;
+  gap: 0.7rem;
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+.secondary-button-link {
+  display: inline-block;
+  padding: 0.55rem 0.9rem;
+  border-radius: 8px;
+  border: 1px solid rgba(76, 47, 31, 0.3);
+  background: var(--white);
 }
 
 .contact-actions {
@@ -383,5 +452,9 @@ button:hover {
 
   .cart-item {
     grid-template-columns: 1fr;
+  }
+
+  .selection-subtotal {
+    margin-top: 0.3rem;
   }
 }
