@@ -110,10 +110,11 @@ if (is_file($svgPath) && is_readable($svgPath)) {
         $svgMapContent = preg_replace('/<!--.*?-->/s', '', $svgMapContent) ?? $svgMapContent;
         $svgMapContent = preg_replace('/\s(?:width|height)="[^"]*"/i', '', $svgMapContent) ?? $svgMapContent;
         $svgMapContent = preg_replace('/\sstyle="[^"]*"/i', '', $svgMapContent) ?? $svgMapContent;
+        $svgMapContent = preg_replace('/\sviewBox="[^"]*"/i', '', $svgMapContent) ?? $svgMapContent;
 
         $svgMapContent = preg_replace(
             '/<svg\b/i',
-            '<svg id="france-map-svg" width="100%" height="auto" preserveAspectRatio="xMidYMid meet" role="img"',
+            '<svg id="france-map-svg" width="100%" height="auto" viewBox="80 30 460 540" preserveAspectRatio="xMidYMid meet" role="img"',
             $svgMapContent,
             1
         ) ?? $svgMapContent;
@@ -324,13 +325,16 @@ if (is_file($svgPath) && is_readable($svgPath)) {
     svgRoot.style.display = 'block';
     svgRoot.style.margin = '0 auto';
     svgRoot.style.maxWidth = '800px';
+    svgRoot.style.transform = 'scale(2.2)';
+    svgRoot.style.transformOrigin = 'center center';
 
     if (inlineMap) {
       inlineMap.style.display = 'flex';
       inlineMap.style.justifyContent = 'center';
       inlineMap.style.alignItems = 'center';
       inlineMap.style.width = '100%';
-      inlineMap.style.minHeight = '520px';
+      inlineMap.style.height = '400px';
+      inlineMap.style.overflow = 'hidden';
     }
 
     const style = document.createElementNS('http://www.w3.org/2000/svg', 'style');
