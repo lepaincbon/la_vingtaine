@@ -55,3 +55,6 @@ Thumbs.db
 *.ntvs*
 *.njsproj
 *.sln
+
+node_modules/
+*.sqlite
