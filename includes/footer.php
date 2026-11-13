@@ -7,6 +7,8 @@ $loadThreeScene = $loadThreeScene ?? false;
     <p>Livraison sous 3 à 5 jours ouvrés.</p>
     <p>
         <a href="https://www.instagram.com/" target="_blank" rel="noopener noreferrer">Instagram</a>
+        •
+        <a href="cgu.php">CGU</a>
     </p>
     <p>© <?= date('Y') ?> La Vingtaine — B2B uniquement</p>
 </footer>
