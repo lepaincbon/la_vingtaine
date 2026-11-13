@@ -200,13 +200,9 @@ a {
 }
 
 .map-object-wrap {
-  max-width: 800px;
   width: 100%;
   margin: 0 auto;
-  min-height: 520px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
+  display: block;
 }
 
 #france-map-inline {
@@ -223,7 +219,6 @@ a {
   height: auto;
   display: block;
   margin: 0 auto;
-  object-fit: contain;
 }
 
 .regions {
@@ -501,9 +496,5 @@ button:disabled {
   #france-map-inline svg,
   #france-map-svg {
     max-width: 100%;
-  }
-
-  .map-object-wrap {
-    min-height: 360px;
   }
 }
