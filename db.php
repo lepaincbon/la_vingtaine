@@ -1,12 +1,25 @@
 <?php
 declare(strict_types=1);
 
-function getPDO(): PDO
+function sqliteDriverAvailable(): bool
 {
-    static $pdo = null;
+    return in_array('sqlite', PDO::getAvailableDrivers(), true);
+}
+
+function getPDO(): ?PDO
+{
+    static $pdo = false;
 
     if ($pdo instanceof PDO) {
         return $pdo;
+    }
+    if ($pdo === null) {
+        return null;
+    }
+
+    if (!sqliteDriverAvailable()) {
+        $pdo = null;
+        return null;
     }
 
     $dataDir = __DIR__ . '/data';
@@ -15,50 +28,24 @@ function getPDO(): PDO
     }
 
     $dbPath = $dataDir . '/la_vingtaine.sqlite';
-    $pdo = new PDO('sqlite:' . $dbPath);
-    $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
-    $pdo->setAttribute(PDO::ATTR_DEFAULT_FETCH_MODE, PDO::FETCH_ASSOC);
 
-    initializeDatabase($pdo);
+    try {
+        $instance = new PDO('sqlite:' . $dbPath);
+        $instance->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+        $instance->setAttribute(PDO::ATTR_DEFAULT_FETCH_MODE, PDO::FETCH_ASSOC);
 
-    return $pdo;
+        initializeDatabase($instance);
+        $pdo = $instance;
+        return $pdo;
+    } catch (Throwable $e) {
+        $pdo = null;
+        return null;
+    }
 }
 
-function initializeDatabase(PDO $pdo): void
+function getSeedProducts(): array
 {
-    $pdo->exec(
-        "CREATE TABLE IF NOT EXISTS products (
-            id TEXT PRIMARY KEY,
-            name TEXT NOT NULL,
-            region TEXT NOT NULL,
-            category TEXT NOT NULL,
-            type TEXT NOT NULL,
-            volume TEXT NOT NULL,
-            abv TEXT NOT NULL,
-            grape TEXT NOT NULL,
-            price REAL NOT NULL,
-            is_exception INTEGER NOT NULL DEFAULT 0,
-            description TEXT NOT NULL
-        )"
-    );
-
-    $pdo->exec(
-        "CREATE TABLE IF NOT EXISTS orders (
-            id INTEGER PRIMARY KEY AUTOINCREMENT,
-            customer_email TEXT,
-            company_name TEXT,
-            items_json TEXT NOT NULL,
-            total_amount REAL NOT NULL,
-            created_at DATETIME DEFAULT CURRENT_TIMESTAMP
-        )"
-    );
-
-    $count = (int)$pdo->query("SELECT COUNT(*) FROM products")->fetchColumn();
-    if ($count > 0) {
-        return;
-    }
-
-    $seedProducts = [
+    return [
         [
             'id' => 'ch-001',
             'name' => 'Champagne Premier Cru Brut',
@@ -125,6 +112,41 @@ function initializeDatabase(PDO $pdo): void
             'description' => 'Arômes complexes de fruits secs, vanille et épices.'
         ]
     ];
+}
+
+function initializeDatabase(PDO $pdo): void
+{
+    $pdo->exec(
+        "CREATE TABLE IF NOT EXISTS products (
+            id TEXT PRIMARY KEY,
+            name TEXT NOT NULL,
+            region TEXT NOT NULL,
+            category TEXT NOT NULL,
+            type TEXT NOT NULL,
+            volume TEXT NOT NULL,
+            abv TEXT NOT NULL,
+            grape TEXT NOT NULL,
+            price REAL NOT NULL,
+            is_exception INTEGER NOT NULL DEFAULT 0,
+            description TEXT NOT NULL
+        )"
+    );
+
+    $pdo->exec(
+        "CREATE TABLE IF NOT EXISTS orders (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            customer_email TEXT,
+            company_name TEXT,
+            items_json TEXT NOT NULL,
+            total_amount REAL NOT NULL,
+            created_at DATETIME DEFAULT CURRENT_TIMESTAMP
+        )"
+    );
+
+    $count = (int)$pdo->query("SELECT COUNT(*) FROM products")->fetchColumn();
+    if ($count > 0) {
+        return;
+    }
 
     $insert = $pdo->prepare(
         "INSERT INTO products (
@@ -134,7 +156,7 @@ function initializeDatabase(PDO $pdo): void
         )"
     );
 
-    foreach ($seedProducts as $product) {
+    foreach (getSeedProducts() as $product) {
         $insert->execute($product);
     }
 }

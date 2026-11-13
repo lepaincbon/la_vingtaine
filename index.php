@@ -5,47 +5,66 @@ session_start();
 require_once __DIR__ . '/db.php';
 
 $pdo = getPDO();
+$usingDb = $pdo instanceof PDO;
 
 if (!isset($_SESSION['cart'])) {
     $_SESSION['cart'] = [];
 }
+if (!isset($_SESSION['orders_fallback'])) {
+    $_SESSION['orders_fallback'] = [];
+}
 
-$action = $_POST['action'] ?? null;
 $message = '';
 $messageType = 'info';
+
+if (!$usingDb) {
+    $message = "Mode dégradé actif : l'extension pdo_sqlite est absente. Le site utilise des données de démonstration temporaires.";
+    $messageType = 'error';
+}
+
+$allProducts = [];
+
+if ($usingDb) {
+    $allProductsStmt = $pdo->query(
+        "SELECT id, name, region, category, type, volume, abv, grape, price, is_exception, description
+         FROM products
+         ORDER BY category ASC, name ASC"
+    );
+    $allProducts = $allProductsStmt->fetchAll();
+} else {
+    $allProducts = getSeedProducts();
+}
+
+$productsById = [];
+foreach ($allProducts as $row) {
+    $productsById[(string)$row['id']] = $row;
+}
+
+$action = $_POST['action'] ?? null;
 
 if ($action === 'add_to_cart') {
     $id = (string)($_POST['id'] ?? '');
     $qty = max(1, (int)($_POST['qty'] ?? 1));
 
-    if ($id !== '') {
-        $stmt = $pdo->prepare(
-            "SELECT id, name, price FROM products WHERE id = :id LIMIT 1"
-        );
-        $stmt->execute([':id' => $id]);
-        $product = $stmt->fetch();
+    $product = $productsById[$id] ?? null;
 
-        if ($product) {
-            if (!isset($_SESSION['cart'][$id])) {
-                $_SESSION['cart'][$id] = [
-                    'id' => (string)$product['id'],
-                    'name' => (string)$product['name'],
-                    'price' => (float)$product['price'],
-                    'qty' => 0
-                ];
-            }
-            $_SESSION['cart'][$id]['price'] = (float)$product['price'];
-            $_SESSION['cart'][$id]['name'] = (string)$product['name'];
-            $_SESSION['cart'][$id]['qty'] += $qty;
-
-            $message = 'Produit ajouté au panier.';
-            $messageType = 'success';
-        } else {
-            $message = 'Produit introuvable ou indisponible.';
-            $messageType = 'error';
+    if ($product) {
+        if (!isset($_SESSION['cart'][$id])) {
+            $_SESSION['cart'][$id] = [
+                'id' => (string)$product['id'],
+                'name' => (string)$product['name'],
+                'price' => (float)$product['price'],
+                'qty' => 0
+            ];
         }
+        $_SESSION['cart'][$id]['price'] = (float)$product['price'];
+        $_SESSION['cart'][$id]['name'] = (string)$product['name'];
+        $_SESSION['cart'][$id]['qty'] += $qty;
+
+        $message = 'Produit ajouté au panier.';
+        $messageType = 'success';
     } else {
-        $message = 'Impossible d’ajouter ce produit.';
+        $message = 'Produit introuvable ou indisponible.';
         $messageType = 'error';
     }
 }
@@ -83,17 +102,27 @@ if ($action === 'validate_order') {
         $message = 'Votre panier est vide.';
         $messageType = 'error';
     } else {
-        $orderInsert = $pdo->prepare(
-            "INSERT INTO orders (customer_email, company_name, items_json, total_amount)
-             VALUES (:customer_email, :company_name, :items_json, :total_amount)"
-        );
+        if ($usingDb) {
+            $orderInsert = $pdo->prepare(
+                "INSERT INTO orders (customer_email, company_name, items_json, total_amount)
+                 VALUES (:customer_email, :company_name, :items_json, :total_amount)"
+            );
 
-        $orderInsert->execute([
-            ':customer_email' => null,
-            ':company_name' => null,
-            ':items_json' => json_encode($cartItems, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES),
-            ':total_amount' => $cartTotal
-        ]);
+            $orderInsert->execute([
+                ':customer_email' => null,
+                ':company_name' => null,
+                ':items_json' => json_encode($cartItems, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES),
+                ':total_amount' => $cartTotal
+            ]);
+        } else {
+            $_SESSION['orders_fallback'][] = [
+                'customer_email' => null,
+                'company_name' => null,
+                'items_json' => json_encode($cartItems, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES),
+                'total_amount' => $cartTotal,
+                'created_at' => date('Y-m-d H:i:s')
+            ];
+        }
 
         $message = 'Demande de commande reçue. Notre équipe vous contactera rapidement. Livraison sous 3 à 5 jours ouvrés.';
         $messageType = 'success';
@@ -102,13 +131,6 @@ if ($action === 'validate_order') {
         $cartTotal = 0.0;
     }
 }
-
-$allProductsStmt = $pdo->query(
-    "SELECT id, name, region, category, type, volume, abv, grape, price, is_exception, description
-     FROM products
-     ORDER BY category ASC, name ASC"
-);
-$allProducts = $allProductsStmt->fetchAll();
 
 $catalog = [];
 foreach ($allProducts as $row) {
