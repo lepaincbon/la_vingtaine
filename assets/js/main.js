@@ -1,19 +1,27 @@
 import * as THREE from 'three';
 
 (() => {
-  const loader = document.getElementById('loader');
-
-  window.addEventListener('load', () => {
-    if (loader) {
-      loader.classList.add('is-hidden');
-      setTimeout(() => {
-        if (loader.parentNode) loader.remove();
-      }, 700);
-    }
-  });
-
   const canvas = document.getElementById('bottle-scene');
   if (!canvas) return;
+
+  const loader = document.getElementById('loader');
+  let loaderHidden = false;
+
+  const hideLoader = () => {
+    if (!loader || loaderHidden) return;
+    loaderHidden = true;
+    loader.classList.add('is-hidden');
+    setTimeout(() => {
+      if (loader.parentNode) loader.remove();
+    }, 700);
+  };
+
+  window.addEventListener('load', hideLoader);
+  window.addEventListener('pageshow', hideLoader);
+  document.addEventListener('DOMContentLoaded', () => {
+    setTimeout(hideLoader, 1200);
+  });
+  setTimeout(hideLoader, 3000);
 
   const titleEl = document.getElementById('hero-bottle-title');
   const metaEl = document.getElementById('hero-bottle-meta');
@@ -28,7 +36,10 @@ import * as THREE from 'three';
   } catch (e) {
     bottleDescriptions = [];
   }
-  if (!bottleDescriptions.length) return;
+  if (!bottleDescriptions.length) {
+    hideLoader();
+    return;
+  }
 
   const scene = new THREE.Scene();
   scene.background = new THREE.Color(0xf7f1e8);
@@ -66,10 +77,10 @@ import * as THREE from 'three';
 
   const getColorByType = (type) => {
     const t = (type || '').toLowerCase();
-    if (t.includes('champagne')) return 0xc9a34f; // doré
-    if (t.includes('blanc')) return 0xf0e7b2; // blanc/jaune pâle
-    if (t.includes('rouge')) return 0x5a1022; // rouge profond
-    if (t.includes('spiritueux')) return 0xb8742c; // ambré
+    if (t.includes('champagne')) return 0xc9a34f;
+    if (t.includes('blanc')) return 0xf0e7b2;
+    if (t.includes('rouge')) return 0x5a1022;
+    if (t.includes('spiritueux')) return 0xb8742c;
     return 0x6b3f28;
   };
 
@@ -181,6 +192,7 @@ import * as THREE from 'three';
     }
 
     renderer.render(scene, camera);
+    hideLoader();
     requestAnimationFrame(animate);
   };
 
