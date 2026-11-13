@@ -101,7 +101,7 @@ $products = $selectedRegion !== '' ? $catalog[$selectedRegion] : [];
 $isProfessional = true;
 
 $svgMapContent = '';
-$svgPath = __DIR__ . '/assets/france.svg';
+$svgPath = __DIR__ . '/assets/gemini-svg.svg';
 if (is_file($svgPath) && is_readable($svgPath)) {
     $svgMapContent = (string)file_get_contents($svgPath);
 
@@ -232,9 +232,9 @@ if (is_file($svgPath) && is_readable($svgPath)) {
       .replace(/[\u0300-\u036f]/g, '');
 
   const regionAliases = {
-    champagne: ['champagne', 'champagne-ardenne', 'grand est', 'marne', 'aube', 'haute-marne', 'ardennes', '51', '10', '52', '08', 'alsace', 'lorraine', 'franche-comte'],
-    bourgogne: ['bourgogne', 'bourgogne-franche-comte', 'cote-dor', 'yonne', 'saone-et-loire', 'nievre', '21', '89', '71', '58'],
-    bordeaux: ['bordeaux', 'aquitaine', 'nouvelle-aquitaine', 'gironde', 'dordogne', 'lot-et-garonne', '33', '24', '47'],
+    champagne: ['champagne', 'alsace', 'lorraine', 'grand est', 'marne', 'aube', 'haute-marne', 'ardennes', '51', '10', '52', '08'],
+    bourgogne: ['bourgogne', 'beaujolais', 'jura', 'savoie', 'bourgogne-franche-comte', 'cote-dor', 'yonne', 'saone-et-loire', 'nievre', '21', '89', '71', '58'],
+    bordeaux: ['bordeaux', 'sud-ouest', 'val-de-loire', 'vallee de la loire', 'vallee-du-rhone', 'languedoc-roussillon', 'provence', 'corse', 'aquitaine', 'nouvelle-aquitaine', 'gironde', 'dordogne', 'lot-et-garonne', '33', '24', '47'],
     spiritueux: ['spiritueux', 'cognac', 'charente', 'charente-maritime', '16', '17', 'poitou-charentes']
   };
 

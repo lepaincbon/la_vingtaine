@@ -15,9 +15,9 @@
       .replace(/[\u0300-\u036f]/g, '');
 
   const regionAliases = {
-    champagne: ['champagne', 'grand est', 'marne', 'aube', 'haute-marne', 'ardennes'],
-    bourgogne: ['bourgogne', 'bourgogne-franche-comte', 'cote-dor', 'yonne', 'saone-et-loire', 'nievre'],
-    bordeaux: ['bordeaux', 'nouvelle-aquitaine', 'gironde', 'dordogne', 'lot-et-garonne'],
+    champagne: ['champagne', 'alsace', 'lorraine', 'grand est', 'marne', 'aube', 'haute-marne', 'ardennes'],
+    bourgogne: ['bourgogne', 'beaujolais', 'jura', 'savoie', 'bourgogne-franche-comte', 'cote-dor', 'yonne', 'saone-et-loire', 'nievre'],
+    bordeaux: ['bordeaux', 'sud-ouest', 'val-de-loire', 'vallee de la loire', 'vallee-du-rhone', 'languedoc-roussillon', 'provence', 'corse', 'nouvelle-aquitaine', 'gironde', 'dordogne', 'lot-et-garonne'],
     spiritueux: ['spiritueux', 'cognac', 'charente', 'charente-maritime']
   };
 
@@ -58,7 +58,7 @@
     const normalized = normalize(regionName);
     if (!normalized || !regionInput) return;
     regionInput.value = regionName;
-    updateListFilter(regionName);
+    updateListFilter(normalized);
     if (submitBtn) submitBtn.click();
   };
 
