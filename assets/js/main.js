@@ -62,6 +62,7 @@ import * as THREE from 'three';
   const bodyGeometry = new THREE.CylinderGeometry(0.44, 0.5, 2.35, 40, 1, false);
   const shoulderGeometry = new THREE.CylinderGeometry(0.34, 0.44, 0.36, 40);
   const neckGeometry = new THREE.CylinderGeometry(0.17, 0.2, 0.58, 28);
+  const labelGeometry = new THREE.CylinderGeometry(0.445, 0.445, 1.1, 32, 1, true, -0.7, 1.4);
 
   const getColorByType = (type) => {
     const t = (type || '').toLowerCase();
@@ -80,6 +81,13 @@ import * as THREE from 'three';
       metalness: 0.2
     });
 
+    const labelMaterial = new THREE.MeshStandardMaterial({
+      color: 0xf7f1e8,
+      roughness: 0.85,
+      metalness: 0.02,
+      side: THREE.DoubleSide
+    });
+
     const group = new THREE.Group();
 
     const body = new THREE.Mesh(bodyGeometry, material);
@@ -88,9 +96,13 @@ import * as THREE from 'three';
     const neck = new THREE.Mesh(neckGeometry, material);
     neck.position.y = 1.8;
 
+    const label = new THREE.Mesh(labelGeometry, labelMaterial);
+    label.position.y = -0.1;
+
     group.add(body);
     group.add(shoulder);
     group.add(neck);
+    group.add(label);
     scene.add(group);
 
     return group;
@@ -149,7 +161,8 @@ import * as THREE from 'three';
       bottle.position.y = -offset * 4.5;
       bottle.position.z = 0;
 
-      bottle.rotation.y = exactScrollIndex * Math.PI * 1.5;
+      bottle.rotation.y = -offset * Math.PI * 1.2;
+      bottle.rotation.z = Math.sin(offset * Math.PI) * 0.12;
       bottle.visible = absOffset < 1.5;
 
       if (absOffset < nearestDistance) nearestDistance = absOffset;
