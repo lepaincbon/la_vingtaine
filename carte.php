@@ -168,6 +168,10 @@ if (is_file($svgPath) && is_readable($svgPath)) {
                     <?= $selectedRegion !== '' ? htmlspecialchars($selectedRegion, ENT_QUOTES, 'UTF-8') : '—' ?>
                 </h3>
 
+                <p id="no-products-message" style="display: none; text-align: center; margin-top: 2rem; font-style: italic;">
+                    Pas de vin en ce moment dans cette région.
+                </p>
+
                 <div class="products-grid" id="products-by-region">
                     <?php foreach ($products as $product): ?>
                         <article
@@ -205,10 +209,6 @@ if (is_file($svgPath) && is_readable($svgPath)) {
                         </article>
                     <?php endforeach; ?>
                 </div>
-
-                <p id="no-products-message" style="display:<?= count($products) === 0 ? 'block' : 'none' ?>;">
-                    Aucun produit disponible pour cette région.
-                </p>
             </div>
         </div>
     </section>
@@ -380,6 +380,8 @@ if (is_file($svgPath) && is_readable($svgPath)) {
   const current = normalize(params.get('region') || '');
   if (current) {
     updateListFilter(current);
+  } else {
+    updateListFilter('');
   }
 
   const inlineSvg = inlineMap ? inlineMap.querySelector('svg') : null;
