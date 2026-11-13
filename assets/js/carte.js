@@ -65,6 +65,9 @@
   const bindSvgInteractions = (svgDoc) => {
     if (!svgDoc) return;
 
+    const root = svgDoc.documentElement;
+    if (!root) return;
+
     const style = document.createElementNS('http://www.w3.org/2000/svg', 'style');
     style.textContent = `
       path, g {
@@ -75,11 +78,9 @@
         cursor: pointer;
       }
     `;
-    if (svgDoc.documentElement) {
-      svgDoc.documentElement.appendChild(style);
-    }
+    root.appendChild(style);
 
-    const zones = svgDoc.querySelectorAll('.wine-zone');
+    const zones = root.querySelectorAll('.wine-zone');
     zones.forEach((zone) => {
       const raw =
         zone.getAttribute('data-name') ||
@@ -94,17 +95,25 @@
       zone.setAttribute('data-wine-region', mapped);
       zone.style.cursor = 'pointer';
       zone.style.transition = 'opacity .2s ease, filter .2s ease';
+
       zone.addEventListener('mouseenter', () => {
         zone.style.opacity = '0.8';
         zone.style.filter = 'brightness(0.95)';
       });
+
       zone.addEventListener('mouseleave', () => {
         zone.style.opacity = '';
         zone.style.filter = '';
       });
+
       zone.addEventListener('click', (e) => {
         e.preventDefault();
         e.stopPropagation();
+        e.stopImmediatePropagation();
+
+        root.querySelectorAll('.wine-active').forEach((el) => el.classList.remove('wine-active'));
+        root.querySelectorAll(`[data-wine-region="${mapped}"]`).forEach((el) => el.classList.add('wine-active'));
+
         activateRegion(mapped.charAt(0).toUpperCase() + mapped.slice(1));
       });
     });

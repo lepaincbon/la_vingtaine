@@ -273,17 +273,6 @@ if (is_file($svgPath) && is_readable($svgPath)) {
     });
   };
 
-  const markActiveMapRegion = (svgRoot, selected) => {
-    if (!svgRoot) return;
-    svgRoot.querySelectorAll('.wine-active').forEach((el) => el.classList.remove('wine-active'));
-    const target = svgRoot.querySelectorAll('[data-wine-region]');
-    target.forEach((el) => {
-      if (normalize(el.getAttribute('data-wine-region')) === selected) {
-        el.classList.add('wine-active');
-      }
-    });
-  };
-
   const activateRegion = (regionName) => {
     const normalized = normalize(regionName);
     if (!normalized || !regionInput) return;
@@ -353,6 +342,11 @@ if (is_file($svgPath) && is_readable($svgPath)) {
       zone.addEventListener('click', (e) => {
         e.preventDefault();
         e.stopPropagation();
+        e.stopImmediatePropagation();
+
+        svgRoot.querySelectorAll('.wine-active').forEach((el) => el.classList.remove('wine-active'));
+        svgRoot.querySelectorAll(`[data-wine-region="${mapped}"]`).forEach((el) => el.classList.add('wine-active'));
+
         const selectedName = displayNames[mapped] || mapped;
         activateRegion(selectedName);
       });
@@ -370,9 +364,6 @@ if (is_file($svgPath) && is_readable($svgPath)) {
   const inlineSvg = inlineMap ? inlineMap.querySelector('svg') : null;
   if (inlineSvg) {
     bindSvgInteractions(inlineSvg);
-    if (current) {
-      markActiveMapRegion(inlineSvg, current);
-    }
   }
 
   regionLinks.forEach((link) => {
