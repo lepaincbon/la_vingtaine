@@ -99,6 +99,24 @@ if (isset($_GET['added']) && $_GET['added'] === '1') {
 
 $products = $selectedRegion !== '' ? $catalog[$selectedRegion] : [];
 $isProfessional = true;
+
+$svgMapContent = '';
+$svgPath = __DIR__ . '/assets/departements.svg';
+if (is_file($svgPath) && is_readable($svgPath)) {
+    $svgMapContent = (string)file_get_contents($svgPath);
+
+    if ($svgMapContent !== '') {
+        $svgMapContent = preg_replace('/<\?xml[^>]*\?>/i', '', $svgMapContent) ?? $svgMapContent;
+        $svgMapContent = preg_replace('/\swidth="[^"]*"/i', '', $svgMapContent) ?? $svgMapContent;
+        $svgMapContent = preg_replace('/\sheight="[^"]*"/i', '', $svgMapContent) ?? $svgMapContent;
+        $svgMapContent = preg_replace(
+            '/<svg\b/i',
+            '<svg id="france-map-svg" width="100%" height="auto" preserveAspectRatio="xMidYMid meet"',
+            $svgMapContent,
+            1
+        ) ?? $svgMapContent;
+    }
+}
 ?>
 
 <main>
@@ -123,12 +141,9 @@ $isProfessional = true;
         <div class="map-layout">
             <div class="map-visual">
                 <div class="map-object-wrap">
-                    <object
-                        id="france-map-object"
-                        type="image/svg+xml"
-                        data="assets/departements.svg"
-                        aria-label="Carte interactive de la France métropolitaine"
-                    ></object>
+                    <div id="france-map-inline" aria-label="Carte interactive de la France métropolitaine">
+                        <?= $svgMapContent ?>
+                    </div>
                 </div>
 
                 <div class="regions" style="margin-top:12px;">
@@ -198,7 +213,7 @@ $isProfessional = true;
 
 <script>
 (() => {
-  const mapObject = document.getElementById('france-map-object');
+  const inlineMap = document.getElementById('france-map-inline');
   const regionInput = document.getElementById('selected-region-input');
   const submitBtn = document.getElementById('region-submit-btn');
   const regionLinks = document.querySelectorAll('[data-region-link]');
@@ -285,16 +300,16 @@ $isProfessional = true;
     if (submitBtn) submitBtn.click();
   };
 
-  const bindSvgInteractions = (svgDoc) => {
-    if (!svgDoc) return;
+  const bindSvgInteractions = (svgRoot) => {
+    if (!svgRoot) return;
 
-    const svgRoot = svgDoc.documentElement;
-    if (svgRoot) {
-      svgRoot.setAttribute('preserveAspectRatio', 'xMidYMid meet');
-      svgRoot.style.width = '100%';
-      svgRoot.style.height = '100%';
-      svgRoot.style.display = 'block';
-    }
+    svgRoot.setAttribute('preserveAspectRatio', 'xMidYMid meet');
+    svgRoot.setAttribute('width', '100%');
+    svgRoot.setAttribute('height', 'auto');
+    svgRoot.style.width = '100%';
+    svgRoot.style.height = 'auto';
+    svgRoot.style.display = 'block';
+    svgRoot.style.margin = '0 auto';
 
     const style = document.createElementNS('http://www.w3.org/2000/svg', 'style');
     style.textContent = `
@@ -312,9 +327,9 @@ $isProfessional = true;
         stroke: #4c2f1f !important;
       }
     `;
-    svgDoc.documentElement.appendChild(style);
+    svgRoot.appendChild(style);
 
-    const candidates = svgDoc.querySelectorAll('path, g');
+    const candidates = svgRoot.querySelectorAll('path, g');
     candidates.forEach((zone) => {
       const raw =
         zone.getAttribute('data-name') ||
@@ -334,7 +349,7 @@ $isProfessional = true;
         const selectedName = displayNames[mapped] || mapped;
         activateRegion(selectedName);
 
-        svgDoc.querySelectorAll('.wine-active').forEach((el) => el.classList.remove('wine-active'));
+        svgRoot.querySelectorAll('.wine-active').forEach((el) => el.classList.remove('wine-active'));
         zone.classList.add('wine-active');
       });
     });
@@ -346,11 +361,9 @@ $isProfessional = true;
     updateListFilter(current);
   }
 
-  if (mapObject) {
-    mapObject.addEventListener('load', () => {
-      const svgDoc = mapObject.contentDocument;
-      bindSvgInteractions(svgDoc);
-    });
+  const inlineSvg = inlineMap ? inlineMap.querySelector('svg') : null;
+  if (inlineSvg) {
+    bindSvgInteractions(inlineSvg);
   }
 
   regionLinks.forEach((link) => {
