@@ -165,7 +165,7 @@ $products = $catalog[$selectedRegion];
 $isProfessional = true;
 
 $heroBottles = [];
-foreach ($catalog as $category => $items) {
+foreach ($catalog as $items) {
     foreach ($items as $item) {
         $heroBottles[] = [
             'name' => $item['name'],
@@ -203,19 +203,23 @@ foreach ($catalog as $category => $items) {
 </header>
 
 <main>
-    <section class="hero">
-        <div class="hero__text">
-            <h1>Sélection B2B de Champagnes, Vins & Spiritueux</h1>
-            <p>Pour les restaurants, hôtels et palaces. Un portefeuille premium sélectionné avec un accompagnement professionnel.</p>
-
-            <div id="hero-bottle-description" style="margin-top:20px;transition:filter .35s ease, opacity .35s ease;">
-                <h3 id="hero-bottle-title" style="margin:0 0 6px 0;">-</h3>
-                <p id="hero-bottle-meta" style="margin:0 0 6px 0;opacity:.8;">-</p>
-                <p id="hero-bottle-text" style="margin:0;">-</p>
+    <section class="hero-scroll" id="hero-scroll">
+        <div class="hero-sticky">
+            <div class="hero-sticky__media">
+                <div class="hero__canvas-wrap">
+                    <canvas id="bottle-scene" aria-label="Bouteille 3D pilotée par le défilement"></canvas>
+                </div>
             </div>
-        </div>
-        <div class="hero__canvas-wrap">
-            <canvas id="bottle-scene" aria-label="Carrousel 3D de bouteilles"></canvas>
+            <div class="hero-sticky__content">
+                <h1>Sélection B2B de Champagnes, Vins & Spiritueux</h1>
+                <p class="hero-intro">Défilez pour découvrir chaque bouteille, sa région et son profil de dégustation.</p>
+
+                <div id="hero-bottle-description">
+                    <h3 id="hero-bottle-title">-</h3>
+                    <p id="hero-bottle-meta">-</p>
+                    <p id="hero-bottle-text">-</p>
+                </div>
+            </div>
         </div>
     </section>
 

@@ -94,30 +94,65 @@ a {
   background: rgba(110, 69, 48, 0.12);
 }
 
-.hero {
-  min-height: 76vh;
+.hero-scroll {
+  height: 400vh;
+  position: relative;
+}
+
+.hero-sticky {
+  position: sticky;
+  top: 0;
+  height: 100vh;
   display: grid;
-  grid-template-columns: 1.1fr 1fr;
-  gap: 1rem;
+  grid-template-columns: 1fr 1fr;
   align-items: center;
+  gap: 1.2rem;
   padding: 2rem min(4vw, 2.4rem);
 }
 
-.hero__text h1 {
+.hero-sticky__media,
+.hero-sticky__content {
+  min-width: 0;
+}
+
+.hero-sticky__content h1 {
   margin: 0 0 1rem;
   font-size: clamp(2rem, 3vw, 3.3rem);
   line-height: 1.1;
   color: var(--brown-900);
 }
 
-.hero__text p {
-  margin: 0;
+.hero-intro {
+  margin: 0 0 1rem;
+  max-width: 52ch;
+  color: #4d3a2f;
+}
+
+#hero-bottle-description {
+  margin-top: 0.7rem;
   max-width: 56ch;
+  transition: filter 0.3s ease, opacity 0.3s ease;
+  filter: blur(0px);
+  opacity: 1;
+}
+
+#hero-bottle-title {
+  margin: 0 0 6px 0;
+  color: var(--brown-900);
+}
+
+#hero-bottle-meta {
+  margin: 0 0 6px 0;
+  opacity: 0.8;
+}
+
+#hero-bottle-text {
+  margin: 0;
   color: #4d3a2f;
 }
 
 .hero__canvas-wrap {
-  height: 500px;
+  height: min(72vh, 640px);
   border-radius: 18px;
   background: radial-gradient(circle at 35% 15%, #fffdf9, #f1e5d8 62%, #eadbc8);
   border: 1px solid rgba(76, 47, 31, 0.13);
@@ -332,12 +367,13 @@ button:hover {
 }
 
 @media (max-width: 900px) {
-  .hero {
+  .hero-sticky {
     grid-template-columns: 1fr;
+    align-content: center;
   }
 
   .hero__canvas-wrap {
-    height: 400px;
+    height: 46vh;
   }
 
   .nav {
