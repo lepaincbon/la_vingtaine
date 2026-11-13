@@ -99,19 +99,12 @@ if (isset($_GET['added']) && $_GET['added'] === '1') {
 
 $products = $selectedRegion !== '' ? $catalog[$selectedRegion] : [];
 $isProfessional = true;
-
-$regionMapConfig = [
-    'Champagne' => ['x' => 370, 'y' => 165],
-    'Bourgogne' => ['x' => 345, 'y' => 250],
-    'Bordeaux' => ['x' => 205, 'y' => 345],
-    'Spiritueux' => ['x' => 250, 'y' => 300]
-];
 ?>
 
 <main>
     <section class="section" id="carte-regions">
         <h2>Carte des Régions</h2>
-        <p>Cliquez sur une région de la carte pour filtrer le catalogue professionnel.</p>
+        <p>Cliquez sur une zone géographique pour filtrer instantanément le catalogue professionnel.</p>
 
         <?php if ($message !== ''): ?>
             <div class="message <?= htmlspecialchars($messageType, ENT_QUOTES, 'UTF-8') ?>">
@@ -122,79 +115,30 @@ $regionMapConfig = [
             </div>
         <?php endif; ?>
 
+        <form id="region-filter-form" method="get" action="carte.php" style="display:none;">
+            <input id="selected-region-input" type="hidden" name="region" value="<?= htmlspecialchars($selectedRegion, ENT_QUOTES, 'UTF-8') ?>">
+            <button id="region-submit-btn" type="submit">Filtrer</button>
+        </form>
+
         <div class="map-layout" style="display:grid;grid-template-columns:1fr;gap:24px;">
             <div class="map-visual" style="background:#f7f1e8;border:1px solid #d7c7b5;border-radius:16px;padding:20px;">
-                <svg viewBox="0 0 540 620" width="100%" height="420" role="img" aria-label="Carte vectorielle de la France métropolitaine avec repères viticoles">
-                    <defs>
-                        <filter id="softShadow" x="-20%" y="-20%" width="140%" height="140%">
-                            <feDropShadow dx="0" dy="2" stdDeviation="2" flood-color="#6b3f28" flood-opacity="0.18"/>
-                        </filter>
-                    </defs>
-
-                    <path
-                        d="M150,78
-                           L232,58
-                           L312,74
-                           L376,125
-                           L422,190
-                           L430,266
-                           L404,337
-                           L415,401
-                           L377,472
-                           L318,529
-                           L247,551
-                           L181,536
-                           L138,494
-                           L98,448
-                           L80,385
-                           L84,314
-                           L70,248
-                           L92,190
-                           L121,141 Z"
-                        fill="#efe6d8"
-                        stroke="#6b3f28"
-                        stroke-width="4"
-                        filter="url(#softShadow)"
-                    />
-
-                    <path
-                        d="M404,337 L421,348 L430,370 L420,392 L402,396 L392,377 L397,355 Z"
-                        fill="#efe6d8"
-                        stroke="#6b3f28"
-                        stroke-width="3"
-                    />
-
-                    <?php foreach ($availableRegions as $region): ?>
-                        <?php
-                        $point = $regionMapConfig[$region] ?? ['x' => 270, 'y' => 310];
-                        $isActive = $region === $selectedRegion;
-                        $fillColor = $isActive ? '#6b3f28' : '#b58a6a';
-                        $radius = $isActive ? 12 : 9;
-                        ?>
-                        <a xlink:href="carte.php?region=<?= urlencode($region) ?>#carte-regions" href="carte.php?region=<?= urlencode($region) ?>#carte-regions">
-                            <circle
-                                cx="<?= (float)$point['x'] ?>"
-                                cy="<?= (float)$point['y'] ?>"
-                                r="<?= $radius ?>"
-                                fill="<?= $fillColor ?>"
-                                stroke="#fffaf2"
-                                stroke-width="3"
-                            ></circle>
-                            <text
-                                x="<?= (float)$point['x'] + 16 ?>"
-                                y="<?= (float)$point['y'] + 5 ?>"
-                                font-size="17"
-                                font-weight="<?= $isActive ? '700' : '500' ?>"
-                                fill="#4a2b1b"
-                            ><?= htmlspecialchars($region, ENT_QUOTES, 'UTF-8') ?></text>
-                        </a>
-                    <?php endforeach; ?>
-                </svg>
+                <object
+                    id="france-map-object"
+                    type="image/svg+xml"
+                    data="assets/departements.svg"
+                    width="100%"
+                    height="480"
+                    aria-label="Carte interactive de la France métropolitaine"
+                    style="display:block;background:#fffaf2;border-radius:12px;"
+                ></object>
 
                 <div class="regions" style="margin-top:12px;">
                     <?php foreach ($availableRegions as $region): ?>
-                        <a class="region-pill <?= $region === $selectedRegion ? 'is-active' : '' ?>"
-                           href="carte.php?region=<?= urlencode($region) ?>#carte-regions">
+                        <a
+                            class="region-pill <?= $region === $selectedRegion ? 'is-active' : '' ?>"
+                            href="carte.php?region=<?= urlencode($region) ?>#carte-regions"
+                            data-region-link="<?= htmlspecialchars($region, ENT_QUOTES, 'UTF-8') ?>"
+                        >
                             <?= htmlspecialchars($region, ENT_QUOTES, 'UTF-8') ?>
                         </a>
                     <?php endforeach; ?>
@@ -207,9 +151,12 @@ $regionMapConfig = [
                     <?= $selectedRegion !== '' ? htmlspecialchars($selectedRegion, ENT_QUOTES, 'UTF-8') : '—' ?>
                 </h3>
 
-                <div class="products-grid">
+                <div class="products-grid" id="products-by-region">
                     <?php foreach ($products as $product): ?>
-                        <article class="product-card <?= $product['exception'] ? 'is-exception' : '' ?>">
+                        <article
+                            class="product-card <?= $product['exception'] ? 'is-exception' : '' ?>"
+                            data-product-region="<?= htmlspecialchars($selectedRegion, ENT_QUOTES, 'UTF-8') ?>"
+                        >
                             <h3><?= htmlspecialchars($product['name'], ENT_QUOTES, 'UTF-8') ?></h3>
                             <p class="product-meta">
                                 <?= htmlspecialchars($product['type'], ENT_QUOTES, 'UTF-8') ?> •
@@ -242,12 +189,14 @@ $regionMapConfig = [
                     <?php endforeach; ?>
                 </div>
 
-                <?php if (count($products) === 0): ?>
-                    <p>Aucun produit disponible pour cette région.</p>
-                <?php endif; ?>
+                <p id="no-products-message" style="display:<?= count($products) === 0 ? 'block' : 'none' ?>;">
+                    Aucun produit disponible pour cette région.
+                </p>
             </div>
         </div>
     </section>
 </main>
+
+<script src="assets/js/carte.js"></script>
 
 <?php require_once __DIR__ . '/includes/footer.php'; ?>
