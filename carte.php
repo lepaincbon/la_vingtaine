@@ -53,9 +53,6 @@ $availableRegions = array_keys($catalog);
 sort($availableRegions);
 
 $selectedRegion = (string)($_GET['region'] ?? ($availableRegions[0] ?? ''));
-if ($selectedRegion === '' || !isset($catalog[$selectedRegion])) {
-    $selectedRegion = $availableRegions[0] ?? '';
-}
 
 $message = '';
 $messageType = 'info';
@@ -97,7 +94,7 @@ if (isset($_GET['added']) && $_GET['added'] === '1') {
     $selectionLink = 'selection.php';
 }
 
-$products = $selectedRegion !== '' ? $catalog[$selectedRegion] : [];
+$products = $catalog[$selectedRegion] ?? [];
 $isProfessional = true;
 
 $svgMapContent = '';
