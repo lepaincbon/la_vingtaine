@@ -42,7 +42,7 @@ import * as THREE from 'three';
   renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2));
 
   const camera = new THREE.PerspectiveCamera(38, 1, 0.1, 100);
-  camera.position.set(0, 1.2, 6.2);
+  camera.position.set(0, 0.8, 6.2);
   scene.add(camera);
 
   scene.add(new THREE.AmbientLight(0xffffff, 1.05));
@@ -59,30 +59,42 @@ import * as THREE from 'three';
   rimLight.position.set(0, 4, -6);
   scene.add(rimLight);
 
-  const bottleGroup = new THREE.Group();
-  scene.add(bottleGroup);
-
   const bodyGeometry = new THREE.CylinderGeometry(0.44, 0.5, 2.35, 40, 1, false);
   const shoulderGeometry = new THREE.CylinderGeometry(0.34, 0.44, 0.36, 40);
   const neckGeometry = new THREE.CylinderGeometry(0.17, 0.2, 0.58, 28);
 
-  const palette = [0x6b3f28, 0xc8ad8d, 0xc9a34f, 0x7a4f35, 0xb58e6b];
+  const getColorByType = (type) => {
+    const t = (type || '').toLowerCase();
+    if (t.includes('champagne')) return 0xc9a34f; // doré
+    if (t.includes('blanc')) return 0xf0e7b2; // blanc/jaune pâle
+    if (t.includes('rouge')) return 0x5a1022; // rouge profond
+    if (t.includes('spiritueux')) return 0xb8742c; // ambré
+    return 0x6b3f28;
+  };
 
-  const bottleMaterial = new THREE.MeshStandardMaterial({
-    color: palette[0],
-    roughness: 0.3,
-    metalness: 0.2
+  const bottles = bottleDescriptions.map((item) => {
+    const color = getColorByType(item.type);
+    const material = new THREE.MeshStandardMaterial({
+      color,
+      roughness: 0.3,
+      metalness: 0.2
+    });
+
+    const group = new THREE.Group();
+
+    const body = new THREE.Mesh(bodyGeometry, material);
+    const shoulder = new THREE.Mesh(shoulderGeometry, material);
+    shoulder.position.y = 1.34;
+    const neck = new THREE.Mesh(neckGeometry, material);
+    neck.position.y = 1.8;
+
+    group.add(body);
+    group.add(shoulder);
+    group.add(neck);
+    scene.add(group);
+
+    return group;
   });
-
-  const body = new THREE.Mesh(bodyGeometry, bottleMaterial);
-  const shoulder = new THREE.Mesh(shoulderGeometry, bottleMaterial);
-  shoulder.position.y = 1.34;
-  const neck = new THREE.Mesh(neckGeometry, bottleMaterial);
-  neck.position.y = 1.8;
-
-  bottleGroup.add(body);
-  bottleGroup.add(shoulder);
-  bottleGroup.add(neck);
 
   const setSize = () => {
     const parent = canvas.parentElement;
@@ -105,55 +117,55 @@ import * as THREE from 'three';
   };
 
   let currentIndex = 0;
-  let pendingIndex = null;
   setDescription(0);
 
   const getSectionProgress = () => {
     if (!scrollSection) return 0;
     const rect = scrollSection.getBoundingClientRect();
     const totalScrollable = Math.max(1, rect.height - window.innerHeight);
-    const progress = Math.min(Math.max(-rect.top / totalScrollable, 0), 1);
-    return progress;
+    return Math.min(Math.max(-rect.top / totalScrollable, 0), 1);
   };
 
-  const clock = new THREE.Clock();
-
   const animate = () => {
-    const elapsed = clock.getElapsedTime();
+    const total = bottleDescriptions.length;
     const globalProgress = getSectionProgress();
 
-    const total = bottleDescriptions.length;
-    const scaled = globalProgress * total;
-    const rawIndex = Math.min(total - 1, Math.floor(scaled));
-    const localProgress = Math.min(0.9999, scaled - rawIndex);
+    const maxIndex = Math.max(0, total - 1);
+    const exactScrollIndex = globalProgress * maxIndex;
+    const nextIndex = Math.round(exactScrollIndex);
 
-    const blurStart = 0.8;
-    const blurEnd = 1.0;
+    if (nextIndex !== currentIndex) {
+      currentIndex = nextIndex;
+      setDescription(currentIndex);
+    }
+
+    let nearestDistance = Number.POSITIVE_INFINITY;
+
+    bottles.forEach((bottle, i) => {
+      const offset = i - exactScrollIndex;
+      const absOffset = Math.abs(offset);
+
+      bottle.position.x = 0;
+      bottle.position.y = -offset * 4.5;
+      bottle.position.z = 0;
+
+      bottle.rotation.y = exactScrollIndex * Math.PI * 1.5;
+      bottle.visible = absOffset < 1.5;
+
+      if (absOffset < nearestDistance) nearestDistance = absOffset;
+    });
+
     let blurStrength = 0;
-
-    if (localProgress >= blurStart) {
-      const t = (localProgress - blurStart) / (blurEnd - blurStart);
-      blurStrength = Math.min(Math.max(t, 0), 1);
+    if (nearestDistance > 0.35 && nearestDistance < 0.5) {
+      blurStrength = (nearestDistance - 0.35) / (0.5 - 0.35);
+    } else if (nearestDistance >= 0.5) {
+      blurStrength = 1;
     }
 
     if (descriptionWrap) {
       descriptionWrap.style.filter = `blur(${(blurStrength * 12).toFixed(2)}px)`;
       descriptionWrap.style.opacity = `${(1 - blurStrength * 0.55).toFixed(3)}`;
     }
-
-    if (rawIndex !== currentIndex && pendingIndex !== rawIndex) {
-      pendingIndex = rawIndex;
-    }
-
-    if (pendingIndex !== null && localProgress >= 0.86) {
-      currentIndex = pendingIndex;
-      pendingIndex = null;
-      setDescription(currentIndex);
-      bottleMaterial.color.setHex(palette[currentIndex % palette.length]);
-    }
-
-    bottleGroup.rotation.y = globalProgress * Math.PI * 2.15;
-    bottleGroup.position.y = Math.sin(elapsed * 1.2) * 0.03 + (blurStrength > 0.05 ? (1 - blurStrength) * 0.08 : 0);
 
     renderer.render(scene, camera);
     requestAnimationFrame(animate);
