@@ -101,17 +101,19 @@ $products = $selectedRegion !== '' ? $catalog[$selectedRegion] : [];
 $isProfessional = true;
 
 $svgMapContent = '';
-$svgPath = __DIR__ . '/assets/france-regions.svg';
+$svgPath = __DIR__ . '/assets/france.svg';
 if (is_file($svgPath) && is_readable($svgPath)) {
     $svgMapContent = (string)file_get_contents($svgPath);
 
     if ($svgMapContent !== '') {
         $svgMapContent = preg_replace('/<\?xml[^>]*\?>/i', '', $svgMapContent) ?? $svgMapContent;
-        $svgMapContent = preg_replace('/\swidth="[^"]*"/i', '', $svgMapContent) ?? $svgMapContent;
-        $svgMapContent = preg_replace('/\sheight="[^"]*"/i', '', $svgMapContent) ?? $svgMapContent;
+        $svgMapContent = preg_replace('/<!--.*?-->/s', '', $svgMapContent) ?? $svgMapContent;
+        $svgMapContent = preg_replace('/\s(?:width|height)="[^"]*"/i', '', $svgMapContent) ?? $svgMapContent;
+        $svgMapContent = preg_replace('/\sstyle="[^"]*"/i', '', $svgMapContent) ?? $svgMapContent;
+
         $svgMapContent = preg_replace(
             '/<svg\b/i',
-            '<svg id="france-map-svg" width="100%" height="auto" preserveAspectRatio="xMidYMid meet"',
+            '<svg id="france-map-svg" width="100%" height="auto" preserveAspectRatio="xMidYMid meet" role="img"',
             $svgMapContent,
             1
         ) ?? $svgMapContent;
@@ -229,10 +231,10 @@ if (is_file($svgPath) && is_readable($svgPath)) {
       .replace(/[\u0300-\u036f]/g, '');
 
   const regionAliases = {
-    champagne: ['champagne', 'grand est', 'marne', 'aube', 'haute-marne', 'ardennes', '51', '10', '52', '08'],
+    champagne: ['champagne', 'champagne-ardenne', 'grand est', 'marne', 'aube', 'haute-marne', 'ardennes', '51', '10', '52', '08', 'alsace', 'lorraine', 'franche-comte'],
     bourgogne: ['bourgogne', 'bourgogne-franche-comte', 'cote-dor', 'yonne', 'saone-et-loire', 'nievre', '21', '89', '71', '58'],
-    bordeaux: ['bordeaux', 'nouvelle-aquitaine', 'gironde', 'dordogne', 'lot-et-garonne', '33', '24', '47'],
-    spiritueux: ['spiritueux', 'cognac', 'charente', 'charente-maritime', '16', '17']
+    bordeaux: ['bordeaux', 'aquitaine', 'nouvelle-aquitaine', 'gironde', 'dordogne', 'lot-et-garonne', '33', '24', '47'],
+    spiritueux: ['spiritueux', 'cognac', 'charente', 'charente-maritime', '16', '17', 'poitou-charentes']
   };
 
   const departmentToRegion = {
@@ -292,6 +294,17 @@ if (is_file($svgPath) && is_readable($svgPath)) {
     });
   };
 
+  const markActiveMapRegion = (svgRoot, selected) => {
+    if (!svgRoot) return;
+    svgRoot.querySelectorAll('.wine-active').forEach((el) => el.classList.remove('wine-active'));
+    const target = svgRoot.querySelectorAll('[data-wine-region]');
+    target.forEach((el) => {
+      if (normalize(el.getAttribute('data-wine-region')) === selected) {
+        el.classList.add('wine-active');
+      }
+    });
+  };
+
   const activateRegion = (regionName) => {
     const normalized = normalize(regionName);
     if (!normalized || !regionInput) return;
@@ -311,13 +324,20 @@ if (is_file($svgPath) && is_readable($svgPath)) {
     svgRoot.style.display = 'block';
     svgRoot.style.margin = '0 auto';
 
+    if (inlineMap) {
+      inlineMap.style.display = 'flex';
+      inlineMap.style.justifyContent = 'center';
+      inlineMap.style.alignItems = 'center';
+      inlineMap.style.width = '100%';
+    }
+
     const style = document.createElementNS('http://www.w3.org/2000/svg', 'style');
     style.textContent = `
-      [data-region] {
+      path, [data-wine-region] {
         cursor: pointer;
         transition: fill .2s ease, opacity .2s ease, stroke .2s ease;
       }
-      [data-region]:hover {
+      path:hover, [data-wine-region]:hover {
         fill: #d8c3ab !important;
         stroke: #6e4530 !important;
       }
@@ -327,27 +347,6 @@ if (is_file($svgPath) && is_readable($svgPath)) {
       }
     `;
     svgRoot.appendChild(style);
-
-    const directRegions = svgRoot.querySelectorAll('[data-region]');
-    if (directRegions.length > 0) {
-      directRegions.forEach((zone) => {
-        const mapped = normalize(zone.getAttribute('data-region') || '');
-        if (!mapped) return;
-
-        zone.setAttribute('data-wine-region', mapped);
-        zone.classList.add('wine-clickable');
-
-        zone.addEventListener('click', (e) => {
-          e.preventDefault();
-          const selectedName = displayNames[mapped] || mapped;
-          activateRegion(selectedName);
-
-          svgRoot.querySelectorAll('.wine-active').forEach((el) => el.classList.remove('wine-active'));
-          zone.classList.add('wine-active');
-        });
-      });
-      return;
-    }
 
     const candidates = svgRoot.querySelectorAll('path, g');
     candidates.forEach((zone) => {
@@ -368,9 +367,6 @@ if (is_file($svgPath) && is_readable($svgPath)) {
         e.preventDefault();
         const selectedName = displayNames[mapped] || mapped;
         activateRegion(selectedName);
-
-        svgRoot.querySelectorAll('.wine-active').forEach((el) => el.classList.remove('wine-active'));
-        zone.classList.add('wine-active');
       });
     });
   };
@@ -384,6 +380,9 @@ if (is_file($svgPath) && is_readable($svgPath)) {
   const inlineSvg = inlineMap ? inlineMap.querySelector('svg') : null;
   if (inlineSvg) {
     bindSvgInteractions(inlineSvg);
+    if (current) {
+      markActiveMapRegion(inlineSvg, current);
+    }
   }
 
   regionLinks.forEach((link) => {
