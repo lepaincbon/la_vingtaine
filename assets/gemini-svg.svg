@@ -41,13 +41,13 @@
       .legend-text {
         font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
         font-size: 11px;
-        fill: #e0e0e0;
+        fill: #000000;
       }
       .title {
         font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
         font-size: 16px;
         font-weight: 700;
-        fill: #ffffff;
+        fill: #000000;
       }
     </style>
   </defs>
