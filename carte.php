@@ -165,7 +165,7 @@ if (is_file($svgPath) && is_readable($svgPath)) {
             <div>
                 <h3>
                     Région sélectionnée :
-                    <?= $selectedRegion !== '' ? htmlspecialchars($selectedRegion, ENT_QUOTES, 'UTF-8') : '—' ?>
+                    <span id="selected-region-name"><?= $selectedRegion !== '' ? htmlspecialchars($selectedRegion, ENT_QUOTES, 'UTF-8') : '—' ?></span>
                 </h3>
 
                 <p id="no-products-message" style="display: none; text-align: center; margin-top: 2rem; font-style: italic;">
@@ -246,8 +246,7 @@ if (is_file($svgPath) && is_readable($svgPath)) {
     languedoc: ['languedoc-roussillon', 'languedoc'],
     provence: ['provence'],
     corse: ['corse'],
-    cognac: ['cognac'],
-    spiritueux: ['spiritueux']
+    spiritueux: ['spiritueux', 'cognac']
   };
 
   const displayNames = {
@@ -265,7 +264,6 @@ if (is_file($svgPath) && is_readable($svgPath)) {
     languedoc: 'Languedoc-Roussillon',
     provence: 'Provence',
     corse: 'Corse',
-    cognac: 'Cognac',
     spiritueux: 'Spiritueux'
   };
 
@@ -293,6 +291,8 @@ if (is_file($svgPath) && is_readable($svgPath)) {
     if (!normalized || !regionInput) return;
     regionInput.value = regionName;
     updateListFilter(normalized);
+    const titleSpan = document.getElementById('selected-region-name');
+    if (titleSpan) titleSpan.textContent = displayNames[normalized] || regionName;
     if (submitBtn) submitBtn.click();
   };
 

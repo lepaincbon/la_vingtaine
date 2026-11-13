@@ -29,8 +29,7 @@
     languedoc: ['languedoc-roussillon', 'languedoc'],
     provence: ['provence'],
     corse: ['corse'],
-    cognac: ['cognac'],
-    spiritueux: ['spiritueux']
+    spiritueux: ['spiritueux', 'cognac']
   };
 
   const displayNames = {
@@ -48,7 +47,6 @@
     languedoc: 'Languedoc-Roussillon',
     provence: 'Provence',
     corse: 'Corse',
-    cognac: 'Cognac',
     spiritueux: 'Spiritueux'
   };
 
@@ -90,6 +88,8 @@
     if (!normalized || !regionInput) return;
     regionInput.value = regionName;
     updateListFilter(normalized);
+    const titleSpan = document.getElementById('selected-region-name');
+    if (titleSpan) titleSpan.textContent = displayNames[normalized] || regionName;
     if (submitBtn) submitBtn.click();
   };
 
