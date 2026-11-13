@@ -2,81 +2,9 @@
 declare(strict_types=1);
 
 session_start();
+require_once __DIR__ . '/db.php';
 
-/**
- * Données de catalogue (structure d'exemple prête à évoluer vers 150-200 références).
- * Les prix sont visibles uniquement pour les professionnels.
- */
-$catalog = [
-    'Champagne' => [
-        [
-            'id' => 'ch-001',
-            'name' => 'Champagne Premier Cru Brut',
-            'region' => 'Montagne de Reims',
-            'type' => 'Champagne',
-            'volume' => '75cl',
-            'abv' => '12%',
-            'grape' => 'Pinot Noir, Chardonnay',
-            'price' => 42.00,
-            'exception' => false,
-            'description' => 'Bulles fines, notes de fruits blancs et finale minérale.'
-        ],
-        [
-            'id' => 'ch-002',
-            'name' => 'Cuvée Prestige Millésimée 2016',
-            'region' => 'Côte des Blancs',
-            'type' => 'Champagne',
-            'volume' => '75cl',
-            'abv' => '12.5%',
-            'grape' => '100% Chardonnay',
-            'price' => 98.00,
-            'exception' => true,
-            'description' => 'Cuvée millésimée exceptionnelle avec un grand potentiel de garde.'
-        ]
-    ],
-    'Bourgogne' => [
-        [
-            'id' => 'bg-001',
-            'name' => 'Chablis Vieilles Vignes',
-            'region' => 'Bourgogne',
-            'type' => 'Vin blanc',
-            'volume' => '75cl',
-            'abv' => '13%',
-            'grape' => 'Chardonnay',
-            'price' => 29.00,
-            'exception' => false,
-            'description' => 'Profil vif et élégant, aux notes d’agrumes et de craie.'
-        ]
-    ],
-    'Bordeaux' => [
-        [
-            'id' => 'bdx-001',
-            'name' => 'Saint-Émilion Grand Cru',
-            'region' => 'Bordeaux',
-            'type' => 'Vin rouge',
-            'volume' => '75cl',
-            'abv' => '14%',
-            'grape' => 'Merlot, Cabernet Franc',
-            'price' => 46.00,
-            'exception' => false,
-            'description' => 'Tanins soyeux, fruits noirs et boisé raffiné.'
-        ]
-    ],
-    'Spiritueux' => [
-        [
-            'id' => 'sp-001',
-            'name' => 'Cognac XO Réserve',
-            'region' => 'Cognac',
-            'type' => 'Spiritueux',
-            'volume' => '70cl',
-            'abv' => '40%',
-            'grape' => 'Ugni Blanc',
-            'price' => 120.00,
-            'exception' => false,
-            'description' => 'Arômes complexes de fruits secs, vanille et épices.'
-        ]
-    ]
-];
+$pdo = getPDO();
 
 if (!isset($_SESSION['cart'])) {
     $_SESSION['cart'] = [];
@@ -88,22 +16,34 @@ $messageType = 'info';
 
 if ($action === 'add_to_cart') {
     $id = (string)($_POST['id'] ?? '');
-    $name = (string)($_POST['name'] ?? '');
-    $price = (float)($_POST['price'] ?? 0);
     $qty = max(1, (int)($_POST['qty'] ?? 1));
 
-    if ($id !== '' && $name !== '' && $price > 0) {
-        if (!isset($_SESSION['cart'][$id])) {
-            $_SESSION['cart'][$id] = [
-                'id' => $id,
-                'name' => $name,
-                'price' => $price,
-                'qty' => 0
-            ];
+    if ($id !== '') {
+        $stmt = $pdo->prepare(
+            "SELECT id, name, price FROM products WHERE id = :id LIMIT 1"
+        );
+        $stmt->execute([':id' => $id]);
+        $product = $stmt->fetch();
+
+        if ($product) {
+            if (!isset($_SESSION['cart'][$id])) {
+                $_SESSION['cart'][$id] = [
+                    'id' => (string)$product['id'],
+                    'name' => (string)$product['name'],
+                    'price' => (float)$product['price'],
+                    'qty' => 0
+                ];
+            }
+            $_SESSION['cart'][$id]['price'] = (float)$product['price'];
+            $_SESSION['cart'][$id]['name'] = (string)$product['name'];
+            $_SESSION['cart'][$id]['qty'] += $qty;
+
+            $message = 'Produit ajouté au panier.';
+            $messageType = 'success';
+        } else {
+            $message = 'Produit introuvable ou indisponible.';
+            $messageType = 'error';
         }
-        $_SESSION['cart'][$id]['qty'] += $qty;
-        $message = 'Produit ajouté au panier.';
-        $messageType = 'success';
     } else {
         $message = 'Impossible d’ajouter ce produit.';
         $messageType = 'error';
@@ -132,7 +72,7 @@ if ($action === 'update_qty') {
 $cartItems = array_values($_SESSION['cart']);
 $cartTotal = 0.0;
 foreach ($cartItems as $item) {
-    $cartTotal += $item['price'] * $item['qty'];
+    $cartTotal += (float)$item['price'] * (int)$item['qty'];
 }
 
 if ($action === 'validate_order') {
@@ -143,7 +83,19 @@ if ($action === 'validate_order') {
         $message = 'Votre panier est vide.';
         $messageType = 'error';
     } else {
-        $message = 'Demande de commande reçue. Notre équipe vous contactera rapidement.';
+        $orderInsert = $pdo->prepare(
+            "INSERT INTO orders (customer_email, company_name, items_json, total_amount)
+             VALUES (:customer_email, :company_name, :items_json, :total_amount)"
+        );
+
+        $orderInsert->execute([
+            ':customer_email' => null,
+            ':company_name' => null,
+            ':items_json' => json_encode($cartItems, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES),
+            ':total_amount' => $cartTotal
+        ]);
+
+        $message = 'Demande de commande reçue. Notre équipe vous contactera rapidement. Livraison sous 3 à 5 jours ouvrés.';
         $messageType = 'success';
         $_SESSION['cart'] = [];
         $cartItems = [];
@@ -151,29 +103,50 @@ if ($action === 'validate_order') {
     }
 }
 
-$regions = array_keys($catalog);
-$selectedRegion = (string)($_GET['region'] ?? $regions[0]);
-if (!isset($catalog[$selectedRegion])) {
-    $selectedRegion = $regions[0];
-}
-$products = $catalog[$selectedRegion];
+$allProductsStmt = $pdo->query(
+    "SELECT id, name, region, category, type, volume, abv, grape, price, is_exception, description
+     FROM products
+     ORDER BY category ASC, name ASC"
+);
+$allProducts = $allProductsStmt->fetchAll();
 
-/**
- * Indicateur professionnel simulé.
- * En production, cela doit provenir d’un vrai système d’authentification/autorisation.
- */
+$catalog = [];
+foreach ($allProducts as $row) {
+    $category = (string)$row['category'];
+    if (!isset($catalog[$category])) {
+        $catalog[$category] = [];
+    }
+    $catalog[$category][] = [
+        'id' => (string)$row['id'],
+        'name' => (string)$row['name'],
+        'region' => (string)$row['region'],
+        'type' => (string)$row['type'],
+        'volume' => (string)$row['volume'],
+        'abv' => (string)$row['abv'],
+        'grape' => (string)$row['grape'],
+        'price' => (float)$row['price'],
+        'exception' => ((int)$row['is_exception']) === 1,
+        'description' => (string)$row['description']
+    ];
+}
+
+$regions = array_keys($catalog);
+$selectedRegion = (string)($_GET['region'] ?? ($regions[0] ?? ''));
+if ($selectedRegion === '' || !isset($catalog[$selectedRegion])) {
+    $selectedRegion = $regions[0] ?? '';
+}
+$products = $selectedRegion !== '' ? $catalog[$selectedRegion] : [];
+
 $isProfessional = true;
 
 $heroBottles = [];
-foreach ($catalog as $items) {
-    foreach ($items as $item) {
-        $heroBottles[] = [
-            'name' => $item['name'],
-            'type' => $item['type'],
-            'region' => $item['region'],
-            'description' => $item['description']
-        ];
-    }
+foreach ($allProducts as $row) {
+    $heroBottles[] = [
+        'name' => (string)$row['name'],
+        'type' => (string)$row['type'],
+        'region' => (string)$row['region'],
+        'description' => (string)$row['description']
+    ];
 }
 ?>
 <!doctype html>
@@ -257,8 +230,6 @@ foreach ($catalog as $items) {
                         <form method="post" class="add-form">
                             <input type="hidden" name="action" value="add_to_cart">
                             <input type="hidden" name="id" value="<?= htmlspecialchars($product['id'], ENT_QUOTES, 'UTF-8') ?>">
-                            <input type="hidden" name="name" value="<?= htmlspecialchars($product['name'], ENT_QUOTES, 'UTF-8') ?>">
-                            <input type="hidden" name="price" value="<?= htmlspecialchars((string)$product['price'], ENT_QUOTES, 'UTF-8') ?>">
                             <label>
                                 Qté
                                 <input type="number" name="qty" min="1" value="1">

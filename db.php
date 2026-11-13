@@ -1,0 +1,140 @@
+<?php
+declare(strict_types=1);
+
+function getPDO(): PDO
+{
+    static $pdo = null;
+
+    if ($pdo instanceof PDO) {
+        return $pdo;
+    }
+
+    $dataDir = __DIR__ . '/data';
+    if (!is_dir($dataDir)) {
+        mkdir($dataDir, 0775, true);
+    }
+
+    $dbPath = $dataDir . '/la_vingtaine.sqlite';
+    $pdo = new PDO('sqlite:' . $dbPath);
+    $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+    $pdo->setAttribute(PDO::ATTR_DEFAULT_FETCH_MODE, PDO::FETCH_ASSOC);
+
+    initializeDatabase($pdo);
+
+    return $pdo;
+}
+
+function initializeDatabase(PDO $pdo): void
+{
+    $pdo->exec(
+        "CREATE TABLE IF NOT EXISTS products (
+            id TEXT PRIMARY KEY,
+            name TEXT NOT NULL,
+            region TEXT NOT NULL,
+            category TEXT NOT NULL,
+            type TEXT NOT NULL,
+            volume TEXT NOT NULL,
+            abv TEXT NOT NULL,
+            grape TEXT NOT NULL,
+            price REAL NOT NULL,
+            is_exception INTEGER NOT NULL DEFAULT 0,
+            description TEXT NOT NULL
+        )"
+    );
+
+    $pdo->exec(
+        "CREATE TABLE IF NOT EXISTS orders (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            customer_email TEXT,
+            company_name TEXT,
+            items_json TEXT NOT NULL,
+            total_amount REAL NOT NULL,
+            created_at DATETIME DEFAULT CURRENT_TIMESTAMP
+        )"
+    );
+
+    $count = (int)$pdo->query("SELECT COUNT(*) FROM products")->fetchColumn();
+    if ($count > 0) {
+        return;
+    }
+
+    $seedProducts = [
+        [
+            'id' => 'ch-001',
+            'name' => 'Champagne Premier Cru Brut',
+            'region' => 'Montagne de Reims',
+            'category' => 'Champagne',
+            'type' => 'Champagne',
+            'volume' => '75cl',
+            'abv' => '12%',
+            'grape' => 'Pinot Noir, Chardonnay',
+            'price' => 42.00,
+            'is_exception' => 0,
+            'description' => 'Bulles fines, notes de fruits blancs et finale minérale.'
+        ],
+        [
+            'id' => 'ch-002',
+            'name' => 'Cuvée Prestige Millésimée 2016',
+            'region' => 'Côte des Blancs',
+            'category' => 'Champagne',
+            'type' => 'Champagne',
+            'volume' => '75cl',
+            'abv' => '12.5%',
+            'grape' => '100% Chardonnay',
+            'price' => 98.00,
+            'is_exception' => 1,
+            'description' => 'Cuvée millésimée exceptionnelle avec un grand potentiel de garde.'
+        ],
+        [
+            'id' => 'bg-001',
+            'name' => 'Chablis Vieilles Vignes',
+            'region' => 'Bourgogne',
+            'category' => 'Bourgogne',
+            'type' => 'Vin blanc',
+            'volume' => '75cl',
+            'abv' => '13%',
+            'grape' => 'Chardonnay',
+            'price' => 29.00,
+            'is_exception' => 0,
+            'description' => 'Profil vif et élégant, aux notes d’agrumes et de craie.'
+        ],
+        [
+            'id' => 'bdx-001',
+            'name' => 'Saint-Émilion Grand Cru',
+            'region' => 'Bordeaux',
+            'category' => 'Bordeaux',
+            'type' => 'Vin rouge',
+            'volume' => '75cl',
+            'abv' => '14%',
+            'grape' => 'Merlot, Cabernet Franc',
+            'price' => 46.00,
+            'is_exception' => 0,
+            'description' => 'Tanins soyeux, fruits noirs et boisé raffiné.'
+        ],
+        [
+            'id' => 'sp-001',
+            'name' => 'Cognac XO Réserve',
+            'region' => 'Cognac',
+            'category' => 'Spiritueux',
+            'type' => 'Spiritueux',
+            'volume' => '70cl',
+            'abv' => '40%',
+            'grape' => 'Ugni Blanc',
+            'price' => 120.00,
+            'is_exception' => 0,
+            'description' => 'Arômes complexes de fruits secs, vanille et épices.'
+        ]
+    ];
+
+    $insert = $pdo->prepare(
+        "INSERT INTO products (
+            id, name, region, category, type, volume, abv, grape, price, is_exception, description
+        ) VALUES (
+            :id, :name, :region, :category, :type, :volume, :abv, :grape, :price, :is_exception, :description
+        )"
+    );
+
+    foreach ($seedProducts as $product) {
+        $insert->execute($product);
+    }
+}

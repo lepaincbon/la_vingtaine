@@ -25,6 +25,11 @@ yarn-error.log
 vendor/
 
 # =========================
+# Base de données SQLite
+# =========================
+data/*.sqlite
+
+# =========================
 # Fichiers 3D sources (Optionnel)
 # =========================
 # Ignore les gros fichiers de travail Blender, mais garde les fichiers exportés pour le web (.glb, .gltf)
