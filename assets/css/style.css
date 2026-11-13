@@ -200,14 +200,18 @@ a {
 }
 
 .map-object-wrap {
-  max-width: 700px;
+  max-width: 800px;
   width: 100%;
   margin: 0 auto;
+  min-height: 520px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 #france-map-inline {
   width: 100%;
-  max-width: 700px;
+  max-width: 800px;
   margin: 0 auto;
   display: block;
 }
@@ -215,7 +219,7 @@ a {
 #france-map-inline svg,
 #france-map-svg {
   width: 100%;
-  max-width: 700px;
+  max-width: 800px;
   height: auto;
   display: block;
   margin: 0 auto;
@@ -497,5 +501,9 @@ button:disabled {
   #france-map-inline svg,
   #france-map-svg {
     max-width: 100%;
+  }
+
+  .map-object-wrap {
+    min-height: 360px;
   }
 }

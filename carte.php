@@ -323,12 +323,14 @@ if (is_file($svgPath) && is_readable($svgPath)) {
     svgRoot.style.height = 'auto';
     svgRoot.style.display = 'block';
     svgRoot.style.margin = '0 auto';
+    svgRoot.style.maxWidth = '800px';
 
     if (inlineMap) {
       inlineMap.style.display = 'flex';
       inlineMap.style.justifyContent = 'center';
       inlineMap.style.alignItems = 'center';
       inlineMap.style.width = '100%';
+      inlineMap.style.minHeight = '520px';
     }
 
     const style = document.createElementNS('http://www.w3.org/2000/svg', 'style');
