@@ -1,0 +1,187 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 600 600" width="100%" height="100%">
+  <defs>
+    <style>
+      .admin-region {
+        fill: #1e1e24;
+        stroke: #3a3a44;
+        stroke-width: 1.5;
+        stroke-linejoin: round;
+      }
+      .wine-zone {
+        opacity: 0.85;
+        stroke: #ffffff;
+        stroke-width: 1;
+        stroke-linejoin: round;
+        transition: opacity 0.2s ease, transform 0.2s ease;
+        cursor: pointer;
+      }
+      .wine-zone:hover {
+        opacity: 1;
+        stroke-width: 2;
+      }
+      .label {
+        font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+        font-size: 11px;
+        font-weight: 700;
+        fill: #ffffff;
+        paint-order: stroke;
+        stroke: #111115;
+        stroke-width: 3px;
+        stroke-linecap: round;
+        stroke-linejoin: round;
+        pointer-events: none;
+        text-anchor: middle;
+      }
+      .legend-box {
+        fill: #16161a;
+        stroke: #3a3a44;
+        stroke-width: 1;
+        rx: 8;
+      }
+      .legend-text {
+        font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+        font-size: 11px;
+        fill: #e0e0e0;
+      }
+      .title {
+        font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+        font-size: 16px;
+        font-weight: 700;
+        fill: #ffffff;
+      }
+    </style>
+  </defs>
+
+  <!-- FOND : Régions administratives (calqué sur le gabarit de france.svg) -->
+  <g id="fond-france">
+    <!-- Hauts-de-France -->
+    <path class="admin-region" d="M270,5 L308,2 L322,38 L372,62 L378,92 L352,135 L278,125 L262,65 Z" />
+    <!-- Normandie -->
+    <path class="admin-region" d="M262,65 L278,125 L260,152 L222,175 L142,162 L122,98 L148,100 L158,122 L205,112 L222,82 Z" />
+    <!-- Île-de-France -->
+    <path class="admin-region" d="M278,125 L352,135 L342,182 L285,192 L260,152 Z" />
+    <!-- Grand Est -->
+    <path class="admin-region" d="M372,62 L405,72 L438,105 L515,128 L542,145 L515,215 L508,242 L448,225 L385,205 L342,182 L352,135 L378,92 Z" />
+    <!-- Bretagne -->
+    <path class="admin-region" d="M142,162 L162,212 L112,245 L52,225 L8,205 L4,175 L45,152 L78,150 L98,170 Z" />
+    <!-- Pays de la Loire -->
+    <path class="admin-region" d="M142,162 L222,175 L235,205 L198,255 L178,312 L148,308 L112,245 L162,212 Z" />
+    <!-- Centre-Val de Loire -->
+    <path class="admin-region" d="M260,152 L285,192 L342,182 L332,272 L295,305 L235,295 L198,255 L235,205 L222,175 Z" />
+    <!-- Bourgogne-Franche-Comté -->
+    <path class="admin-region" d="M342,182 L385,205 L448,225 L508,242 L475,315 L425,312 L382,325 L355,295 L332,272 Z" />
+    <!-- Nouvelle-Aquitaine -->
+    <path class="admin-region" d="M178,312 L198,255 L235,295 L295,305 L312,355 L292,415 L260,395 L232,455 L192,475 L195,525 L162,518 L132,492 L148,415 L152,338 Z" />
+    <!-- Auvergne-Rhône-Alpes -->
+    <path class="admin-region" d="M295,305 L332,272 L355,295 L382,325 L425,312 L475,315 L495,345 L485,395 L502,415 L455,445 L385,438 L345,425 L292,415 L312,355 Z" />
+    <!-- Occitanie -->
+    <path class="admin-region" d="M192,475 L232,455 L260,395 L292,415 L345,425 L385,438 L402,465 L355,505 L322,555 L278,548 L242,525 L195,525 Z" />
+    <!-- Provence-Alpes-Côte d'Azur -->
+    <path class="admin-region" d="M385,438 L455,445 L502,415 L525,448 L475,495 L415,502 L382,485 L402,465 Z" />
+    <!-- Corse -->
+    <path class="admin-region" d="M588,505 L598,538 L592,588 L578,598 L560,565 L562,528 L582,520 Z" />
+  </g>
+
+  <!-- RÉGIONS VITICOLES -->
+  <g id="regions-viticoles">
+    <!-- Champagne -->
+    <path id="champagne" class="wine-zone" fill="#F4D03F" d="M352,128 C372,125 390,140 388,165 C386,185 370,202 352,195 C338,188 335,165 342,145 Z" />
+
+    <!-- Alsace -->
+    <path id="alsace" class="wine-zone" fill="#58D68D" d="M505,148 C515,152 518,185 510,215 C504,232 492,235 488,225 C485,205 495,165 505,148 Z" />
+
+    <!-- Lorraine (Côtes de Toul / Moselle) -->
+    <path id="lorraine" class="wine-zone" fill="#82E0AA" d="M442,135 C455,138 458,168 448,182 C438,188 430,175 432,158 Z" />
+
+    <!-- Vallée de la Loire -->
+    <path id="val-de-loire" class="wine-zone" fill="#48C9B0" d="M125,242 C155,228 195,228 235,235 C275,242 308,228 325,245 C332,262 325,292 312,292 C298,292 295,268 265,265 C225,262 185,278 142,272 C122,268 115,252 125,242 Z" />
+
+    <!-- Bourgogne -->
+    <path id="bourgogne" class="wine-zone" fill="#A93226" d="M358,215 C375,212 395,235 402,265 C408,295 402,325 388,325 C375,325 368,295 362,268 C352,245 345,222 358,215 Z" />
+
+    <!-- Jura -->
+    <path id="jura" class="wine-zone" fill="#E67E22" d="M445,258 C458,260 462,285 452,302 C442,308 432,295 435,275 Z" />
+
+    <!-- Savoie & Bugey -->
+    <path id="savoie" class="wine-zone" fill="#EB984E" d="M448,328 C468,325 482,345 475,368 C465,378 445,368 442,352 C438,338 442,330 448,328 Z" />
+
+    <!-- Beaujolais -->
+    <path id="beaujolais" class="wine-zone" fill="#E74C3C" d="M382,325 C398,322 405,342 398,358 C390,365 378,355 378,340 Z" />
+
+    <!-- Charentes (Cognac / Pineau) -->
+    <path id="cognac" class="wine-zone" fill="#F39C12" d="M162,315 C185,308 215,322 218,348 C220,368 195,378 175,372 C158,365 152,332 162,315 Z" />
+
+    <!-- Bordeaux -->
+    <path id="bordeaux" class="wine-zone" fill="#78281F" d="M155,368 C178,365 212,385 215,415 C218,438 192,452 168,442 C148,432 145,388 155,368 Z" />
+
+    <!-- Sud-Ouest (Bergerac, Cahors, Gasgogne, Jurançon, Gaillac...) -->
+    <path id="sud-ouest" class="wine-zone" fill="#9B59B6" d="M215,402 C245,395 278,412 285,442 C292,472 268,498 242,495 C225,492 215,465 202,468 C185,472 188,512 165,515 C145,515 142,482 162,462 C182,445 205,425 215,402 Z" />
+
+    <!-- Vallée du Rhône -->
+    <path id="vallee-du-rhone" class="wine-zone" fill="#C0392B" d="M392,358 C408,358 415,385 418,412 C425,438 442,455 432,472 C418,485 388,478 382,458 C378,438 388,415 388,392 C388,375 385,362 392,358 Z" />
+
+    <!-- Languedoc-Roussillon -->
+    <path id="languedoc-roussillon" class="wine-zone" fill="#D35400" d="M378,452 C395,458 388,485 362,505 C338,525 332,552 308,552 C288,552 285,532 302,512 C318,492 342,465 378,452 Z" />
+
+    <!-- Provence -->
+    <path id="provence" class="wine-zone" fill="#F1948A" d="M418,472 C448,465 488,465 505,482 C512,495 478,508 445,505 C418,502 405,482 418,472 Z" />
+
+    <!-- Corse -->
+    <path id="corse" class="wine-zone" fill="#EC7063" d="M585,512 C595,535 592,578 580,592 C568,588 562,562 565,535 C568,522 578,515 585,512 Z" />
+  </g>
+
+  <!-- ÉTIQUETTES SUR LA CARTE -->
+  <g id="labels">
+    <text x="364" y="165" class="label">Champagne</text>
+    <text x="502" y="190" class="label">Alsace</text>
+    <text x="442" y="160" class="label" font-size="9">Lorraine</text>
+    <text x="225" y="255" class="label">Vallée de la Loire</text>
+    <text x="382" y="275" class="label">Bourgogne</text>
+    <text x="448" y="285" class="label">Jura</text>
+    <text x="462" y="352" class="label">Savoie</text>
+    <text x="365" y="345" class="label" font-size="10">Beaujolais</text>
+    <text x="188" y="345" class="label">Cognac</text>
+    <text x="182" y="412" class="label">Bordeaux</text>
+    <text x="242" y="455" class="label">Sud-Ouest</text>
+    <text x="410" y="430" class="label">Vallée du Rhône</text>
+    <text x="335" y="512" class="label">Languedoc-Roussillon</text>
+    <text x="462" y="490" class="label">Provence</text>
+    <text x="578" y="555" class="label">Corse</text>
+  </g>
+
+  <!-- LÉGENDE -->
+  <g id="legende" transform="translate(15, 380)">
+    <rect x="0" y="0" width="120" height="205" class="legend-box" />
+    <text x="10" y="20" class="title" font-size="12">Vignobles</text>
+    
+    <circle cx="16" cy="38" r="5" fill="#78281F" />
+    <text x="28" y="42" class="legend-text">Bordeaux</text>
+
+    <circle cx="16" cy="54" r="5" fill="#A93226" />
+    <text x="28" y="58" class="legend-text">Bourgogne</text>
+
+    <circle cx="16" cy="70" r="5" fill="#F4D03F" />
+    <text x="28" y="74" class="legend-text">Champagne</text>
+
+    <circle cx="16" cy="86" r="5" fill="#48C9B0" />
+    <text x="28" y="90" class="legend-text">Val de Loire</text>
+
+    <circle cx="16" cy="102" r="5" fill="#C0392B" />
+    <text x="28" y="106" class="legend-text">Vallée du Rhône</text>
+
+    <circle cx="16" cy="118" r="5" fill="#58D68D" />
+    <text x="28" y="122" class="legend-text">Alsace & Est</text>
+
+    <circle cx="16" cy="134" r="5" fill="#D35400" />
+    <text x="28" y="138" class="legend-text">Languedoc</text>
+
+    <circle cx="16" cy="150" r="5" fill="#9B59B6" />
+    <text x="28" y="154" class="legend-text">Sud-Ouest</text>
+
+    <circle cx="16" cy="166" r="5" fill="#F1948A" />
+    <text x="28" y="170" class="legend-text">Provence & Corse</text>
+
+    <circle cx="16" cy="182" r="5" fill="#E67E22" />
+    <text x="28" y="186" class="legend-text">Jura & Savoie</text>
+  </g>
+</svg>
