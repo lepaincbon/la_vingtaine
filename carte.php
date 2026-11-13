@@ -101,7 +101,7 @@ $products = $selectedRegion !== '' ? $catalog[$selectedRegion] : [];
 $isProfessional = true;
 
 $svgMapContent = '';
-$svgPath = __DIR__ . '/assets/departements.svg';
+$svgPath = __DIR__ . '/assets/france-regions.svg';
 if (is_file($svgPath) && is_readable($svgPath)) {
     $svgMapContent = (string)file_get_contents($svgPath);
 
@@ -313,12 +313,11 @@ if (is_file($svgPath) && is_readable($svgPath)) {
 
     const style = document.createElementNS('http://www.w3.org/2000/svg', 'style');
     style.textContent = `
-      path[data-wine-region], g[data-wine-region], path.wine-clickable, g.wine-clickable {
+      [data-region] {
         cursor: pointer;
         transition: fill .2s ease, opacity .2s ease, stroke .2s ease;
       }
-      path[data-wine-region]:hover, g[data-wine-region]:hover,
-      path.wine-clickable:hover, g.wine-clickable:hover {
+      [data-region]:hover {
         fill: #d8c3ab !important;
         stroke: #6e4530 !important;
       }
@@ -328,6 +327,27 @@ if (is_file($svgPath) && is_readable($svgPath)) {
       }
     `;
     svgRoot.appendChild(style);
+
+    const directRegions = svgRoot.querySelectorAll('[data-region]');
+    if (directRegions.length > 0) {
+      directRegions.forEach((zone) => {
+        const mapped = normalize(zone.getAttribute('data-region') || '');
+        if (!mapped) return;
+
+        zone.setAttribute('data-wine-region', mapped);
+        zone.classList.add('wine-clickable');
+
+        zone.addEventListener('click', (e) => {
+          e.preventDefault();
+          const selectedName = displayNames[mapped] || mapped;
+          activateRegion(selectedName);
+
+          svgRoot.querySelectorAll('.wine-active').forEach((el) => el.classList.remove('wine-active'));
+          zone.classList.add('wine-active');
+        });
+      });
+      return;
+    }
 
     const candidates = svgRoot.querySelectorAll('path, g');
     candidates.forEach((zone) => {
