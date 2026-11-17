@@ -94,16 +94,6 @@ a {
   background: rgba(110, 69, 48, 0.12);
 }
 
-.nav a.nav-selection-link {
-  background: var(--brown-900);
-  color: var(--offwhite);
-  font-weight: 600;
-}
-
-.nav a.nav-selection-link:hover {
-  background: #5a3725;
-}
-
 .hero-scroll {
   height: 400vh;
   position: relative;
@@ -197,12 +187,6 @@ a {
   border: 1px solid #d7c7b5;
   border-radius: 16px;
   padding: 20px;
-}
-
-.map-object-wrap {
-  width: 100%;
-  margin: 0 auto;
-  display: block;
 }
 
 #france-map-inline {
@@ -395,11 +379,6 @@ button:disabled {
 
 .inline-form input {
   width: 80px;
-}
-
-.cart-total {
-  margin-top: 1rem;
-  font-size: 1.05rem;
 }
 
 .cart-rule {

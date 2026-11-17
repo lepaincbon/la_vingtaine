@@ -140,10 +140,9 @@ if (is_file($svgPath) && is_readable($svgPath)) {
 
         <div class="map-layout">
             <div class="map-visual">
-                <div class="map-object-wrap">
-                    <div id="france-map-inline" aria-label="Carte interactive de la France métropolitaine">
-                        <?= $svgMapContent ?>
-                    </div>
+                <div id="france-map-inline" aria-label="Carte interactive de la France métropolitaine">
+                    <?= $svgMapContent ?>
+                </div>
                 </div>
 
                 <div class="regions" style="margin-top:12px;">
