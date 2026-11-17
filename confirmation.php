@@ -53,6 +53,12 @@ $items = json_decode($lastOrder['items_json'] ?? '[]', true) ?: [];
             sous 24h ouvrées pour finaliser la livraison.
         </div>
 
+        <div class="confirmation-actions" style="margin: 20px 0;">
+            <a href="download_pdf.php?order_id=<?= (int)$lastOrder['id'] ?>" class="button primary" target="_blank" style="display: inline-block; background-color: #4a0a1a; color: white; padding: 12px 24px; text-decoration: none; border-radius: 4px; font-weight: bold;">
+                📄 Télécharger le bon de commande PDF
+            </a>
+        </div>
+
         <h2>Récapitulatif de la commande</h2>
         <p><strong>Numéro de commande：</strong>#<?= (int)$lastOrder['id'] ?></p>
         <p><strong>Société：</strong><?= htmlspecialchars((string)($lastOrder['company_name'] ?? ''), ENT_QUOTES, 'UTF-8') ?></p>

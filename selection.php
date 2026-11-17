@@ -1,6 +1,9 @@
 <?php
 declare(strict_types=1);
 
+ini_set('display_errors', '1');
+error_reporting(E_ALL);
+
 $pageTitle = 'La Vingtaine | Liste des vins sélectionnés';
 $pageDescription = 'Gestion de la sélection B2B et validation de commande.';
 $currentPage = 'selection';
@@ -8,6 +11,8 @@ $loadThreeScene = false;
 
 require_once __DIR__ . '/includes/session.php';
 require_once __DIR__ . '/includes/auth.php';
+require_once __DIR__ . '/includes/mailer.php';
+require_once __DIR__ . '/includes/generate_pdf.php';
 
 requireAuth();
 
@@ -91,6 +96,16 @@ if ($action === 'validate_order') {
                 ':total_amount' => $cartTotal
             ]);
             $_SESSION['last_order_id'] = (int)$pdo->lastInsertId();
+            $orderId = $_SESSION['last_order_id'];
+            
+            // Générer PDF et envoyer e-mail
+            $pdfContent = generateOrderPdfOutput($orderId, [
+                'created_at' => date('Y-m-d H:i:s'),
+                'company_name' => $companyName,
+                'customer_email' => $customerEmail
+            ], $cartItems, $pro ?? ['company_name' => $companyName, 'customer_email' => $customerEmail]);
+            
+            sendOrderEmailWithPdf($customerEmail, $companyName, $orderId, $pdfContent);
         } else {
             $_SESSION['orders_fallback'][] = [
                 'customer_email' => $customerEmail,
@@ -100,6 +115,16 @@ if ($action === 'validate_order') {
                 'created_at' => date('Y-m-d H:i:s')
             ];
             $_SESSION['last_order_id'] = (int)count($_SESSION['orders_fallback']);
+            $orderId = $_SESSION['last_order_id'];
+
+            // Générer PDF et envoyer e-mail
+            $pdfContent = generateOrderPdfOutput($orderId, [
+                'created_at' => date('Y-m-d H:i:s'),
+                'company_name' => $companyName,
+                'customer_email' => $customerEmail
+            ], $cartItems, $pro ?? ['company_name' => $companyName, 'customer_email' => $customerEmail]);
+
+            sendOrderEmailWithPdf($customerEmail, $companyName, $orderId, $pdfContent);
         }
 
         $message = 'Commande validée. Redirection vers la page de confirmation…';
