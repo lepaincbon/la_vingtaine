@@ -38,7 +38,7 @@ $currentPage = $currentPage ?? '';
 </head>
 <body>
 <header class="header">
-    <div class="logo">La Vingtaine</div>
+    <a class="logo" href="index.php" aria-label="La Vingtaine — Accueil">La Vingtaine</a>
     <nav class="nav">
         <a href="index.php" class="<?= $currentPage === 'home' ? 'is-active' : '' ?>">Accueil</a>
         <a href="catalogue.php" class="<?= $currentPage === 'catalogue' ? 'is-active' : '' ?>">Catalogue & Régions</a>

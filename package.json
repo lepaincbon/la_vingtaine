@@ -1,16 +1,15 @@
 {
   "name": "la_vingtaine",
   "version": "1.0.0",
-  "description": "",
-  "main": "index.js",
+  "description": "Plateforme B2B La Vingtaine - sélection de champagnes, vins et spiritueux",
+  "private": true,
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "dev": "echo \"Aucun script de build requis : Three.js est importé via importmap dans le header.\""
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "@svg-maps/france.regions": "^2.0.0",
     "three": "^0.187.0"
   }
 }
