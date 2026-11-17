@@ -125,7 +125,7 @@ if (is_file($svgPath) && is_readable($svgPath)) {
         <p>Cliquez sur une zone géographique pour filtrer instantanément le catalogue professionnel.</p>
 
         <?php if ($message !== ''): ?>
-            <div class="message <?= htmlspecialchars($messageType, ENT_QUOTES, 'UTF-8') ?>">
+            <div class="message <?= htmlspecialchars($messageType, ENT_QUOTES, 'UTF-8') ?>" role="alert" aria-live="polite">
                 <?= htmlspecialchars($message, ENT_QUOTES, 'UTF-8') ?>
                 <?php if ($selectionLink !== ''): ?>
                     <br><a href="<?= htmlspecialchars($selectionLink, ENT_QUOTES, 'UTF-8') ?>">Voir ma sélection</a>

@@ -31,7 +31,9 @@ function getPDO(): ?PDO
     $legacyDbPath = __DIR__ . '/data/la_vingtaine.sqlite';
 
     if (!is_file($dbPath) && is_file($legacyDbPath)) {
-        @copy($legacyDbPath, $dbPath);
+        if (!copy($legacyDbPath, $dbPath)) {
+            error_log('La Vingtaine: failed to migrate legacy database from ' . $legacyDbPath);
+        }
     }
 
     try {
@@ -43,6 +45,7 @@ function getPDO(): ?PDO
         $pdo = $instance;
         return $pdo;
     } catch (Throwable $e) {
+        error_log('La Vingtaine DB error: ' . $e->getMessage());
         $pdo = null;
         return null;
     }

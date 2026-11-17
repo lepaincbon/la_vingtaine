@@ -6,7 +6,7 @@ $loadThreeScene = $loadThreeScene ?? false;
 <footer class="footer">
     <p>Livraison sous 3 à 5 jours ouvrés.</p>
     <p>
-        <a href="https://www.instagram.com/lavingtaine/" target="_blank" rel="noopener noreferrer">Instagram</a>
+        <a href="https://www.instagram.com/" target="_blank" rel="noopener noreferrer">Instagram</a>
         •
         <a href="cgu.php">CGU</a>
     </p>

@@ -102,7 +102,7 @@ $isProfessional = true;
         <h2>Catalogue par régions viticoles</h2>
 
         <?php if ($message !== ''): ?>
-            <div class="message <?= htmlspecialchars($messageType, ENT_QUOTES, 'UTF-8') ?>">
+            <div class="message <?= htmlspecialchars($messageType, ENT_QUOTES, 'UTF-8') ?>" role="alert" aria-live="polite">
                 <?= htmlspecialchars($message, ENT_QUOTES, 'UTF-8') ?>
                 <?php if ($selectionLink !== ''): ?>
                     <br><a href="<?= htmlspecialchars($selectionLink, ENT_QUOTES, 'UTF-8') ?>">Voir ma sélection</a>
