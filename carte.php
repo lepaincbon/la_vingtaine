@@ -6,6 +6,11 @@ $pageDescription = 'Explorez le catalogue B2B via une carte interactive des rég
 $currentPage = 'carte';
 $loadThreeScene = false;
 
+require_once __DIR__ . '/includes/session.php';
+require_once __DIR__ . '/includes/auth.php';
+
+requireAuth();
+
 require_once __DIR__ . '/includes/header.php';
 
 $pdo = getPDO();
@@ -195,6 +200,7 @@ if (is_file($svgPath) && is_readable($svgPath)) {
                                     <input type="hidden" name="action" value="add_to_cart">
                                     <input type="hidden" name="id" value="<?= htmlspecialchars($product['id'], ENT_QUOTES, 'UTF-8') ?>">
                                     <input type="hidden" name="region" value="<?= htmlspecialchars($selectedRegion, ENT_QUOTES, 'UTF-8') ?>">
+                                    <?= csrfField() ?>
                                     <label>
                                         Qté
                                         <input type="number" name="qty" min="1" value="1">

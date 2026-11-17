@@ -171,6 +171,17 @@ function initializeDatabase(PDO $pdo): void
         )"
     );
 
+    $pdo->exec(
+        "CREATE TABLE IF NOT EXISTS professionals (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            company_name TEXT NOT NULL,
+            customer_email TEXT NOT NULL UNIQUE,
+            password_hash TEXT NOT NULL,
+            is_active INTEGER NOT NULL DEFAULT 1,
+            created_at DATETIME DEFAULT CURRENT_TIMESTAMP
+        )"
+    );
+
     $count = (int)$pdo->query("SELECT COUNT(*) FROM products")->fetchColumn();
     if ($count > 0) {
         return;

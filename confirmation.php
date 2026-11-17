@@ -6,6 +6,11 @@ $pageDescription = 'Confirmation de votre commande B2B chez La Vingtaine.';
 $currentPage = 'confirmation';
 $loadThreeScene = false;
 
+require_once __DIR__ . '/includes/session.php';
+require_once __DIR__ . '/includes/auth.php';
+
+requireAuth();
+
 require_once __DIR__ . '/includes/header.php';
 
 $pdo = getPDO();
@@ -13,17 +18,22 @@ $usingDb = $pdo instanceof PDO;
 
 $lastOrder = null;
 
-if ($usingDb) {
-    $stmt = $pdo->query(
-        "SELECT id, customer_email, company_name, items_json, total_amount, created_at
-         FROM orders
-         ORDER BY id DESC
-         LIMIT 1"
-    );
-    $lastOrder = $stmt->fetch() ?: null;
-} else {
-    $fallbackOrders = $_SESSION['orders_fallback'] ?? [];
-    $lastOrder = !empty($fallbackOrders) ? end($fallbackOrders) : null;
+$lastOrderId = (int)($_SESSION['last_order_id'] ?? 0);
+if ($lastOrderId > 0) {
+    if ($usingDb) {
+        $stmt = $pdo->prepare(
+            "SELECT id, customer_email, company_name, items_json, total_amount, created_at
+             FROM orders
+             WHERE id = :id
+             LIMIT 1"
+        );
+        $stmt->execute([':id' => $lastOrderId]);
+        $lastOrder = $stmt->fetch() ?: null;
+    } else {
+        $fallbackOrders = $_SESSION['orders_fallback'] ?? [];
+        $index = $lastOrderId - 1;
+        $lastOrder = $fallbackOrders[$index] ?? null;
+    }
 }
 
 if (!$lastOrder) {

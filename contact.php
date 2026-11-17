@@ -6,27 +6,37 @@ $pageDescription = 'Coordonnées agence, contact fournisseur et demande B2B.';
 $currentPage = 'contact';
 $loadThreeScene = false;
 
+require_once __DIR__ . '/includes/session.php';
+require_once __DIR__ . '/includes/auth.php';
+require_once __DIR__ . '/includes/csrf.php';
 require_once __DIR__ . '/db.php';
 
 if (session_status() !== PHP_SESSION_ACTIVE) {
     session_start();
 }
 
+requireAuth();
+
 $pdo = getPDO();
 $usingDb = $pdo instanceof PDO;
+
+$pro = currentProfessional();
 
 $messageType = 'info';
 $feedbackMessage = '';
 
-$company = trim((string)($_POST['company'] ?? ''));
-$email = trim((string)($_POST['email'] ?? ''));
+$company = trim((string)($_POST['company'] ?? ($pro['company_name'] ?? '')));
+$customerEmail = trim((string)($_POST['email'] ?? ($pro['customer_email'] ?? '')));
 $contactMessage = trim((string)($_POST['message'] ?? ''));
 
 if (($_POST['action'] ?? '') === 'send_contact') {
-    if ($company === '') {
+    if (!validateCsrf()) {
+        $feedbackMessage = 'Sécurité : jeton de session invalide, veuillez réessayer.';
+        $messageType = 'error';
+    } elseif ($company === '') {
         $feedbackMessage = 'Merci de renseigner le nom de votre société.';
         $messageType = 'error';
-    } elseif ($email === '' || !filter_var($email, FILTER_VALIDATE_EMAIL)) {
+    } elseif ($customerEmail === '' || !filter_var($customerEmail, FILTER_VALIDATE_EMAIL)) {
         $feedbackMessage = 'Merci de renseigner une adresse e-mail valide.';
         $messageType = 'error';
     } elseif ($contactMessage === '') {
@@ -40,13 +50,13 @@ if (($_POST['action'] ?? '') === 'send_contact') {
             );
             $insert->execute([
                 ':company_name' => $company,
-                ':customer_email' => $email,
+                ':customer_email' => $customerEmail,
                 ':message' => $contactMessage
             ]);
         } else {
             $_SESSION['contact_requests_fallback'][] = [
                 'company_name' => $company,
-                'customer_email' => $email,
+                'customer_email' => $customerEmail,
                 'message' => $contactMessage,
                 'created_at' => date('Y-m-d H:i:s')
             ];
@@ -55,7 +65,7 @@ if (($_POST['action'] ?? '') === 'send_contact') {
         $feedbackMessage = 'Demande envoyée. Notre équipe vous recontacte rapidement.';
         $messageType = 'success';
         $company = '';
-        $email = '';
+        $customerEmail = '';
         $contactMessage = '';
     }
 }
@@ -81,6 +91,7 @@ require_once __DIR__ . '/includes/header.php';
 
         <form class="contact-form" method="post" action="contact.php">
             <input type="hidden" name="action" value="send_contact">
+            <?= csrfField() ?>
             <label>
                 Société
                 <input
@@ -98,7 +109,7 @@ require_once __DIR__ . '/includes/header.php';
                     name="email"
                     required
                     placeholder="pro@societe.com"
-                    value="<?= htmlspecialchars($email, ENT_QUOTES, 'UTF-8') ?>"
+                    value="<?= htmlspecialchars($customerEmail, ENT_QUOTES, 'UTF-8') ?>"
                 >
             </label>
             <label>

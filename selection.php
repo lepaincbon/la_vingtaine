@@ -6,34 +6,51 @@ $pageDescription = 'Gestion de la sélection B2B et validation de commande.';
 $currentPage = 'selection';
 $loadThreeScene = false;
 
+require_once __DIR__ . '/includes/session.php';
+require_once __DIR__ . '/includes/auth.php';
+
+requireAuth();
+
 require_once __DIR__ . '/includes/header.php';
 
 $pdo = getPDO();
 $usingDb = $pdo instanceof PDO;
 
+$pro = currentProfessional();
+$customerEmail = trim((string)($_POST['customer_email'] ?? ($pro['customer_email'] ?? '')));
+$companyName = trim((string)($_POST['company_name'] ?? ($pro['company_name'] ?? '')));
+
 $message = '';
 $messageType = 'info';
-$customerEmail = trim((string)($_POST['customer_email'] ?? ''));
-$companyName = trim((string)($_POST['company_name'] ?? ''));
 
 $action = $_POST['action'] ?? null;
 
 if ($action === 'remove_from_cart') {
-    $id = (string)($_POST['id'] ?? '');
-    if ($id !== '' && isset($_SESSION['cart'][$id])) {
-        unset($_SESSION['cart'][$id]);
-        $message = 'Vin retiré de votre sélection.';
-        $messageType = 'success';
+    if (!validateCsrf()) {
+        $message = 'Sécurité : jeton de session invalide, veuillez réessayer.';
+        $messageType = 'error';
+    } else {
+        $id = (string)($_POST['id'] ?? '');
+        if ($id !== '' && isset($_SESSION['cart'][$id])) {
+            unset($_SESSION['cart'][$id]);
+            $message = 'Vin retiré de votre sélection.';
+            $messageType = 'success';
+        }
     }
 }
 
 if ($action === 'update_qty') {
-    $id = (string)($_POST['id'] ?? '');
-    $qty = max(1, (int)($_POST['qty'] ?? 1));
-    if ($id !== '' && isset($_SESSION['cart'][$id])) {
-        $_SESSION['cart'][$id]['qty'] = $qty;
-        $message = 'Votre sélection a été mise à jour.';
-        $messageType = 'success';
+    if (!validateCsrf()) {
+        $message = 'Sécurité : jeton de session invalide, veuillez réessayer.';
+        $messageType = 'error';
+    } else {
+        $id = (string)($_POST['id'] ?? '');
+        $qty = max(1, (int)($_POST['qty'] ?? 1));
+        if ($id !== '' && isset($_SESSION['cart'][$id])) {
+            $_SESSION['cart'][$id]['qty'] = $qty;
+            $message = 'Votre sélection a été mise à jour.';
+            $messageType = 'success';
+        }
     }
 }
 
@@ -46,7 +63,10 @@ $minimumOrderAmount = 300.0;
 $remainingAmount = max(0.0, $minimumOrderAmount - $cartTotal);
 
 if ($action === 'validate_order') {
-    if ($cartTotal < $minimumOrderAmount) {
+    if (!validateCsrf()) {
+        $message = 'Sécurité : jeton de session invalide, veuillez réessayer.';
+        $messageType = 'error';
+    } elseif ($cartTotal < $minimumOrderAmount) {
         $message = 'Validation impossible : minimum de commande B2B de 300,00 € non atteint.';
         $messageType = 'error';
     } elseif (count($cartItems) === 0) {
@@ -70,6 +90,7 @@ if ($action === 'validate_order') {
                 ':items_json' => json_encode($cartItems, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES),
                 ':total_amount' => $cartTotal
             ]);
+            $_SESSION['last_order_id'] = (int)$pdo->lastInsertId();
         } else {
             $_SESSION['orders_fallback'][] = [
                 'customer_email' => $customerEmail,
@@ -78,6 +99,7 @@ if ($action === 'validate_order') {
                 'total_amount' => $cartTotal,
                 'created_at' => date('Y-m-d H:i:s')
             ];
+            $_SESSION['last_order_id'] = (int)count($_SESSION['orders_fallback']);
         }
 
         $message = 'Commande validée. Redirection vers la page de confirmation…';
@@ -118,6 +140,7 @@ if ($action === 'validate_order') {
                         <form method="post" class="inline-form">
                             <input type="hidden" name="action" value="update_qty">
                             <input type="hidden" name="id" value="<?= htmlspecialchars((string)$item['id'], ENT_QUOTES, 'UTF-8') ?>">
+                            <?= csrfField() ?>
                             <label>
                                 Quantité
                                 <input type="number" name="qty" min="1" value="<?= (int)$item['qty'] ?>">
@@ -127,6 +150,7 @@ if ($action === 'validate_order') {
                         <form method="post" class="inline-form">
                             <input type="hidden" name="action" value="remove_from_cart">
                             <input type="hidden" name="id" value="<?= htmlspecialchars((string)$item['id'], ENT_QUOTES, 'UTF-8') ?>">
+                            <?= csrfField() ?>
                             <button type="submit" class="danger">Supprimer</button>
                         </form>
                     </div>
@@ -149,6 +173,7 @@ if ($action === 'validate_order') {
         <div class="selection-actions">
             <form method="post">
                 <input type="hidden" name="action" value="validate_order">
+                <?= csrfField() ?>
                 <label>
                     Société
                     <input

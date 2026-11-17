@@ -1,10 +1,9 @@
 <?php
 declare(strict_types=1);
 
-if (session_status() !== PHP_SESSION_ACTIVE) {
-    session_start();
-}
-
+require_once __DIR__ . '/session.php';
+require_once __DIR__ . '/csrf.php';
+require_once __DIR__ . '/auth.php';
 require_once __DIR__ . '/../db.php';
 
 if (!isset($_SESSION['cart']) || !is_array($_SESSION['cart'])) {
@@ -45,6 +44,27 @@ $currentPage = $currentPage ?? '';
         <a href="carte.php" class="<?= $currentPage === 'carte' ? 'is-active' : '' ?>">Carte des Régions</a>
         <a href="selection.php" class="<?= $currentPage === 'selection' ? 'is-active' : '' ?>">Liste des vins sélectionnés (<?= $cartBottleCount ?>)</a>
         <a href="apropos.php" class="<?= $currentPage === 'apropos' ? 'is-active' : '' ?>">À propos</a>
-<a href="contact.php" class="<?= $currentPage === 'contact' ? 'is-active' : '' ?>">Contact & Fournisseur</a>
+        <a href="contact.php" class="<?= $currentPage === 'contact' ? 'is-active' : '' ?>">Contact & Fournisseur</a>
+        <?php if ($currentPage === 'login'): ?>
+            <span class="nav-auth">
+                <a href="login.php" class="is-active">Connexion</a>
+                <span class="nav-sep">·</span>
+                <a href="register.php">Inscription</a>
+            </span>
+        <?php elseif (currentProfessional() !== null): ?>
+            <span class="nav-auth">
+                <span class="nav-company"><?= htmlspecialchars(currentProfessional()['company_name'], ENT_QUOTES, 'UTF-8') ?></span>
+                <form method="post" action="logout.php" class="logout-form">
+                    <?= csrfField() ?>
+                    <button type="submit" class="nav-logout">Déconnexion</button>
+                </form>
+            </span>
+        <?php else: ?>
+            <span class="nav-auth">
+                <a href="login.php">Connexion</a>
+                <span class="nav-sep">·</span>
+                <a href="register.php">Inscription</a>
+            </span>
+        <?php endif; ?>
     </nav>
 </header>
