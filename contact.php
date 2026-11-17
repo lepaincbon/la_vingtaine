@@ -69,8 +69,8 @@ require_once __DIR__ . '/includes/header.php';
         <p>Besoin d’une référence spécifique, d’un volume particulier ou d’une coordination fournisseur ?</p>
 
         <div class="contact-actions">
-            <a class="primary-link" href="mailto:contact@lavingtaine.fr">Contacter l’agence par e-mail</a>
-            <a class="secondary-link" href="tel:+33100000000">Appeler le support fournisseur</a>
+            <a class="primary-link" href="mailto:contact@lavingtaine.com">Contacter l’agence par e-mail</a>
+            <a class="secondary-link" href="tel:+331487234567">Appeler le support fournisseur</a>
         </div>
 
         <?php if ($feedbackMessage !== ''): ?>

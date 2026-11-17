@@ -1,0 +1,9 @@
+# robots.txt - La Vingtaine
+# Plateforme B2B réservée aux professionnels
+
+User-agent: *
+Allow: /
+Disallow: /data/
+Disallow: /.la_vingtaine_data/
+
+Sitemap: https://lavingtaine.com/sitemap.xml
