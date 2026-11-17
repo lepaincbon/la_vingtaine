@@ -22,12 +22,17 @@ function getPDO(): ?PDO
         return null;
     }
 
-    $dataDir = __DIR__ . '/data';
+    $dataDir = getDataDirectory();
     if (!is_dir($dataDir)) {
         mkdir($dataDir, 0775, true);
     }
 
     $dbPath = $dataDir . '/la_vingtaine.sqlite';
+    $legacyDbPath = __DIR__ . '/data/la_vingtaine.sqlite';
+
+    if (!is_file($dbPath) && is_file($legacyDbPath)) {
+        @copy($legacyDbPath, $dbPath);
+    }
 
     try {
         $instance = new PDO('sqlite:' . $dbPath);
@@ -41,6 +46,16 @@ function getPDO(): ?PDO
         $pdo = null;
         return null;
     }
+}
+
+function getDataDirectory(): string
+{
+    $configuredDir = trim((string)getenv('LA_VINGTAINE_DATA_DIR'));
+    if ($configuredDir !== '') {
+        return $configuredDir;
+    }
+
+    return dirname(__DIR__) . '/.la_vingtaine_data';
 }
 
 function getSeedProducts(): array
@@ -139,6 +154,16 @@ function initializeDatabase(PDO $pdo): void
             company_name TEXT,
             items_json TEXT NOT NULL,
             total_amount REAL NOT NULL,
+            created_at DATETIME DEFAULT CURRENT_TIMESTAMP
+        )"
+    );
+
+    $pdo->exec(
+        "CREATE TABLE IF NOT EXISTS contact_requests (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            company_name TEXT NOT NULL,
+            customer_email TEXT NOT NULL,
+            message TEXT NOT NULL,
             created_at DATETIME DEFAULT CURRENT_TIMESTAMP
         )"
     );

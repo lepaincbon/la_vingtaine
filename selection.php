@@ -13,6 +13,8 @@ $usingDb = $pdo instanceof PDO;
 
 $message = '';
 $messageType = 'info';
+$customerEmail = trim((string)($_POST['customer_email'] ?? ''));
+$companyName = trim((string)($_POST['company_name'] ?? ''));
 
 $action = $_POST['action'] ?? null;
 
@@ -50,6 +52,12 @@ if ($action === 'validate_order') {
     } elseif (count($cartItems) === 0) {
         $message = 'Votre sélection est vide.';
         $messageType = 'error';
+    } elseif ($companyName === '') {
+        $message = 'Merci de renseigner le nom de votre société.';
+        $messageType = 'error';
+    } elseif ($customerEmail === '' || !filter_var($customerEmail, FILTER_VALIDATE_EMAIL)) {
+        $message = 'Merci de renseigner une adresse e-mail professionnelle valide.';
+        $messageType = 'error';
     } else {
         if ($usingDb) {
             $orderInsert = $pdo->prepare(
@@ -57,15 +65,15 @@ if ($action === 'validate_order') {
                  VALUES (:customer_email, :company_name, :items_json, :total_amount)"
             );
             $orderInsert->execute([
-                ':customer_email' => null,
-                ':company_name' => null,
+                ':customer_email' => $customerEmail,
+                ':company_name' => $companyName,
                 ':items_json' => json_encode($cartItems, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES),
                 ':total_amount' => $cartTotal
             ]);
         } else {
             $_SESSION['orders_fallback'][] = [
-                'customer_email' => null,
-                'company_name' => null,
+                'customer_email' => $customerEmail,
+                'company_name' => $companyName,
                 'items_json' => json_encode($cartItems, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES),
                 'total_amount' => $cartTotal,
                 'created_at' => date('Y-m-d H:i:s')
@@ -78,6 +86,8 @@ if ($action === 'validate_order') {
         $cartItems = [];
         $cartTotal = 0.0;
         $remainingAmount = $minimumOrderAmount;
+        $customerEmail = '';
+        $companyName = '';
     }
 }
 ?>
@@ -136,6 +146,26 @@ if ($action === 'validate_order') {
         <div class="selection-actions">
             <form method="post">
                 <input type="hidden" name="action" value="validate_order">
+                <label>
+                    Société
+                    <input
+                        type="text"
+                        name="company_name"
+                        required
+                        value="<?= htmlspecialchars($companyName, ENT_QUOTES, 'UTF-8') ?>"
+                        placeholder="Nom de votre société"
+                    >
+                </label>
+                <label>
+                    E-mail professionnel
+                    <input
+                        type="email"
+                        name="customer_email"
+                        required
+                        value="<?= htmlspecialchars($customerEmail, ENT_QUOTES, 'UTF-8') ?>"
+                        placeholder="achat@societe.com"
+                    >
+                </label>
                 <button type="submit" class="primary" <?= ($cartTotal < $minimumOrderAmount || count($cartItems) === 0) ? 'disabled' : '' ?>>
                     Valider la sélection
                 </button>

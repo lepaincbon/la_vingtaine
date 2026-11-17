@@ -13,6 +13,9 @@ if (!isset($_SESSION['cart']) || !is_array($_SESSION['cart'])) {
 if (!isset($_SESSION['orders_fallback']) || !is_array($_SESSION['orders_fallback'])) {
     $_SESSION['orders_fallback'] = [];
 }
+if (!isset($_SESSION['contact_requests_fallback']) || !is_array($_SESSION['contact_requests_fallback'])) {
+    $_SESSION['contact_requests_fallback'] = [];
+}
 
 $cartBottleCount = 0;
 foreach ($_SESSION['cart'] as $cartLine) {

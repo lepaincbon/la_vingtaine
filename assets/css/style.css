@@ -405,6 +405,12 @@ button:disabled {
   flex-wrap: wrap;
 }
 
+.selection-actions form {
+  display: grid;
+  gap: 0.6rem;
+  min-width: min(100%, 360px);
+}
+
 .secondary-button-link {
   display: inline-block;
   padding: 0.55rem 0.9rem;
