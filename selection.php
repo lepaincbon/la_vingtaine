@@ -105,7 +105,8 @@ if ($action === 'validate_order') {
                 'customer_email' => $customerEmail
             ], $cartItems, $pro ?? ['company_name' => $companyName, 'customer_email' => $customerEmail]);
             
-            sendOrderEmailWithPdf($customerEmail, $companyName, $orderId, $pdfContent);
+            $orderEmailSent = sendOrderEmailWithPdf($customerEmail, $companyName, $orderId, $pdfContent);
+            $_SESSION['order_email_status'] = $orderEmailSent ? 'sent' : 'failed';
         } else {
             $_SESSION['orders_fallback'][] = [
                 'customer_email' => $customerEmail,
@@ -124,7 +125,8 @@ if ($action === 'validate_order') {
                 'customer_email' => $customerEmail
             ], $cartItems, $pro ?? ['company_name' => $companyName, 'customer_email' => $customerEmail]);
 
-            sendOrderEmailWithPdf($customerEmail, $companyName, $orderId, $pdfContent);
+            $orderEmailSent = sendOrderEmailWithPdf($customerEmail, $companyName, $orderId, $pdfContent);
+            $_SESSION['order_email_status'] = $orderEmailSent ? 'sent' : 'failed';
         }
 
         $message = 'Commande validée. Redirection vers la page de confirmation…';

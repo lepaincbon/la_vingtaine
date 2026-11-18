@@ -19,26 +19,32 @@ class LaVingtainePDF extends FPDF
         $this->professional = $professional;
     }
 
+    private function pdfText(string $text): string
+    {
+        $converted = @iconv('UTF-8', 'windows-1252//TRANSLIT', $text);
+        return $converted === false ? $text : $converted;
+    }
+
     public function Header(): void
     {
         // Logo / Title
         $this->SetFont('Helvetica', 'B', 20);
         $this->SetTextColor(74, 10, 26); // #4a0a1a bordeaux
-        $this->Cell(130, 10, 'LA VINGTAINE', 0, 0, 'L');
+        $this->Cell(130, 10, $this->pdfText('LA VINGTAINE'), 0, 0, 'L');
 
         // Document title
         $this->SetFont('Helvetica', 'B', 12);
         $this->SetTextColor(100, 100, 100);
-        $this->Cell(60, 10, 'BON DE COMMANDE B2B', 0, 1, 'R');
+        $this->Cell(60, 10, $this->pdfText('BON DE COMMANDE B2B'), 0, 1, 'R');
 
         // Subtitle / Agency info
         $this->SetFont('Helvetica', '', 9);
         $this->SetTextColor(120, 120, 120);
-        $this->Cell(130, 5, 'Selection exclusive de Champagnes, Vins & Spiritueux', 0, 0, 'L');
-        $this->Cell(60, 5, 'Commande N° ' . str_pad((string)$this->orderId, 5, '0', STR_PAD_LEFT), 0, 1, 'R');
+        $this->Cell(130, 5, $this->pdfText('Sélection exclusive de Champagnes, Vins & Spiritueux'), 0, 0, 'L');
+        $this->Cell(60, 5, $this->pdfText('Commande N° ') . str_pad((string)$this->orderId, 5, '0', STR_PAD_LEFT), 0, 1, 'R');
 
-        $this->Cell(130, 5, '12 Avenue de Champagne, 51100 Reims', 0, 0, 'L');
-        $this->Cell(60, 5, 'Date : ' . date('d/m/Y', strtotime($this->orderData['created_at'] ?? 'now')), 0, 1, 'R');
+        $this->Cell(130, 5, $this->pdfText('12 Avenue de Champagne, 51100 Reims'), 0, 0, 'L');
+        $this->Cell(60, 5, $this->pdfText('Date : ') . date('d/m/Y', strtotime($this->orderData['created_at'] ?? 'now')), 0, 1, 'R');
 
         // Divider line
         $this->SetDrawColor(212, 175, 55); // #d4af37 gold
@@ -70,14 +76,14 @@ class LaVingtainePDF extends FPDF
         $this->SetFont('Helvetica', 'B', 10);
         $this->SetTextColor(74, 10, 26);
         $this->SetXY(14, 41);
-        $this->Cell(180, 5, 'INFORMATIONS CLIENT PROFESSIONNEL', 0, 1, 'L');
+        $this->Cell(180, 5, $this->pdfText('INFORMATIONS CLIENT PROFESSIONNEL'), 0, 1, 'L');
 
         $this->SetFont('Helvetica', '', 9);
         $this->SetTextColor(50, 50, 50);
         $this->SetX(14);
-        $this->Cell(180, 5, 'Societe : ' . ($this->professional['company_name'] ?? $this->orderData['company_name'] ?? 'N/A'), 0, 1, 'L');
+        $this->Cell(180, 5, $this->pdfText('Société : ' . ($this->professional['company_name'] ?? $this->orderData['company_name'] ?? 'N/A')), 0, 1, 'L');
         $this->SetX(14);
-        $this->Cell(180, 5, 'Contact / E-mail : ' . ($this->professional['customer_email'] ?? $this->orderData['customer_email'] ?? 'N/A'), 0, 1, 'L');
+        $this->Cell(180, 5, $this->pdfText('Contact / E-mail : ' . ($this->professional['customer_email'] ?? $this->orderData['customer_email'] ?? 'N/A')), 0, 1, 'L');
 
         $this->Ln(8);
 
@@ -86,9 +92,9 @@ class LaVingtainePDF extends FPDF
         $this->SetFillColor(74, 10, 26);
         $this->SetTextColor(255, 255, 255);
         
-        $this->Cell(85, 8, ' Designation', 1, 0, 'L', true);
-        $this->Cell(35, 8, ' Region', 1, 0, 'L', true);
-        $this->Cell(20, 8, ' Qte', 1, 0, 'C', true);
+        $this->Cell(85, 8, $this->pdfText(' Désignation'), 1, 0, 'L', true);
+        $this->Cell(35, 8, $this->pdfText(' Région'), 1, 0, 'L', true);
+        $this->Cell(20, 8, $this->pdfText(' Qté'), 1, 0, 'C', true);
         $this->Cell(25, 8, ' P.U. HT', 1, 0, 'R', true);
         $this->Cell(25, 8, ' Total HT', 1, 1, 'R', true);
 
@@ -99,11 +105,12 @@ class LaVingtainePDF extends FPDF
 
         $subtotal = 0.0;
         foreach ($this->items as $item) {
-            $name = (string)($item['name'] ?? 'Produit');
-            $name = iconv('UTF-8', 'ISO-8859-1//TRANSLIT', $name);
-            $region = (string)($item['region'] ?? '');
-            $region = iconv('UTF-8', 'ISO-8859-1//TRANSLIT', $region);
-            $qty = (int)($item['quantity'] ?? 1);
+            $name = $this->pdfText((string)($item['name'] ?? 'Produit'));
+            $region = $this->pdfText((string)($item['region'] ?? ''));
+            $qty = (int)($item['qty'] ?? $item['quantity'] ?? 1);
+            if ($qty < 1) {
+                $qty = 1;
+            }
             $price = (float)($item['price'] ?? 0);
             $lineTotal = $qty * $price;
             $subtotal += $lineTotal;
@@ -125,24 +132,24 @@ class LaVingtainePDF extends FPDF
         $totalTtc = $subtotal + $vat;
 
         $this->SetX(110);
-        $this->Cell(50, 6, 'Total HT :', 1, 0, 'L');
+        $this->Cell(50, 6, $this->pdfText('Total HT :'), 1, 0, 'L');
         $this->Cell(40, 6, number_format($subtotal, 2, ',', ' ') . ' EUR', 1, 1, 'R');
 
         $this->SetX(110);
-        $this->Cell(50, 6, 'TVA (20%) :', 1, 0, 'L');
+        $this->Cell(50, 6, $this->pdfText('TVA (20%) :'), 1, 0, 'L');
         $this->Cell(40, 6, number_format($vat, 2, ',', ' ') . ' EUR', 1, 1, 'R');
 
         $this->SetFont('Helvetica', 'B', 10);
         $this->SetFillColor(248, 246, 240);
         $this->SetX(110);
-        $this->Cell(50, 8, 'Total TTC :', 1, 0, 'L', true);
+        $this->Cell(50, 8, $this->pdfText('Total TTC :'), 1, 0, 'L', true);
         $this->Cell(40, 8, number_format($totalTtc, 2, ',', ' ') . ' EUR', 1, 1, 'R', true);
 
         // Conditions & Validations note
         $this->Ln(15);
         $this->SetFont('Helvetica', 'I', 8);
         $this->SetTextColor(100, 100, 100);
-        $this->MultiCell(190, 4, "Commande enregistree et validee sous reserve des stocks disponibles. Minimum de commande B2B : 300 EUR HT.\nReglement par virement bancaire a 30 jours fin de mois.", 0, 'L');
+        $this->MultiCell(190, 4, $this->pdfText("Commande enregistrée et validée sous réserve des stocks disponibles. Minimum de commande B2B : 300 EUR HT.\nRèglement par virement bancaire à 30 jours fin de mois."), 0, 'L');
 
         return $this->Output('S');
     }

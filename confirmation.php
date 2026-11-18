@@ -17,6 +17,8 @@ $pdo = getPDO();
 $usingDb = $pdo instanceof PDO;
 
 $lastOrder = null;
+$orderEmailStatus = (string)($_SESSION['order_email_status'] ?? '');
+unset($_SESSION['order_email_status']);
 
 $lastOrderId = (int)($_SESSION['last_order_id'] ?? 0);
 if ($lastOrderId > 0) {
@@ -52,6 +54,13 @@ $items = json_decode($lastOrder['items_json'] ?? '[]', true) ?: [];
             Votre commande a été enregistrée avec succès. Notre équipe vous recontactera
             sous 24h ouvrées pour finaliser la livraison.
         </div>
+
+        <?php if ($orderEmailStatus === 'failed'): ?>
+            <div class="message error" role="alert" aria-live="polite">
+                Attention : l'e-mail automatique de confirmation n'a pas pu être envoyé.
+                Votre commande est bien enregistrée, vous pouvez télécharger le PDF ci-dessous.
+            </div>
+        <?php endif; ?>
 
         <div class="confirmation-actions" style="margin: 20px 0;">
             <a href="download_pdf.php?order_id=<?= (int)$lastOrder['id'] ?>" class="button primary" target="_blank" style="display: inline-block; background-color: #4a0a1a; color: white; padding: 12px 24px; text-decoration: none; border-radius: 4px; font-weight: bold;">

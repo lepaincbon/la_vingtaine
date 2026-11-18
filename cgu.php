@@ -23,7 +23,7 @@ require_once __DIR__ . '/includes/header.php';
         <h2>2. Éditeur du site</h2>
         <p>
             Le site est édité par l’agence La Vingtaine. Pour toute demande :
-            <a href="mailto:contact@lavingtaine.com">contact@lavingtaine.com</a>.
+            <a href="mailto:contact@la-vingtaine.com">contact@la-vingtaine.com</a>.
         </p>
 
         <h2>3. Accès réservé aux professionnels</h2>
@@ -53,7 +53,7 @@ require_once __DIR__ . '/includes/header.php';
             Les données sont conservées pendant la durée nécessaire aux finalités de traitement et
             conformément aux obligations légales applicables. L’utilisateur peut exercer ses droits
             d’accès, de rectification, d’opposition, d’effacement et de limitation en écrivant à
-            <a href="mailto:contact@lavingtaine.com">contact@lavingtaine.com</a>.
+            <a href="mailto:contact@la-vingtaine.com">contact@la-vingtaine.com</a>.
         </p>
 
         <h2>6. Propriété intellectuelle</h2>

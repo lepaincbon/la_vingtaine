@@ -9,6 +9,7 @@ $loadThreeScene = false;
 require_once __DIR__ . '/includes/session.php';
 require_once __DIR__ . '/includes/auth.php';
 require_once __DIR__ . '/includes/csrf.php';
+require_once __DIR__ . '/includes/mailer.php';
 require_once __DIR__ . '/db.php';
 
 if (session_status() !== PHP_SESSION_ACTIVE) {
@@ -62,8 +63,16 @@ if (($_POST['action'] ?? '') === 'send_contact') {
             ];
         }
 
-        $feedbackMessage = 'Demande envoyée. Notre équipe vous recontacte rapidement.';
-        $messageType = 'success';
+        // Envoi de l'e-mail de notification à l'agence
+        $mailSent = sendContactNotification($customerEmail, $company, $contactMessage);
+
+        if ($mailSent) {
+            $feedbackMessage = 'Demande envoyée. Notre équipe vous recontacte rapidement.';
+            $messageType = 'success';
+        } else {
+            $feedbackMessage = 'Demande enregistrée, mais la notification e-mail a échoué. Merci de contacter directement contact@la-vingtaine.com.';
+            $messageType = 'error';
+        }
         $company = '';
         $customerEmail = '';
         $contactMessage = '';
@@ -79,7 +88,7 @@ require_once __DIR__ . '/includes/header.php';
         <p>Besoin d’une référence spécifique, d’un volume particulier ou d’une coordination fournisseur ?</p>
 
         <div class="contact-actions">
-            <a class="primary-link" href="mailto:contact@lavingtaine.com">Contacter l’agence par e-mail</a>
+            <a class="primary-link" href="mailto:contact@la-vingtaine.com">Contacter l’agence par e-mail</a>
             <a class="secondary-link" href="tel:+331487234567">Appeler le support fournisseur</a>
         </div>
 

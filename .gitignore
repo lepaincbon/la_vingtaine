@@ -4,6 +4,7 @@
 # IMPORTANT : Ne jamais commit tes clés d'API (Azure, OpenAI, base de données)
 .env
 .env.*
+!.env.example
 *.pem
 
 # =========================
