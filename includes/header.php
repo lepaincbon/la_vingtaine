@@ -69,10 +69,8 @@ $currentPage = $currentPage ?? '';
             </span>
         <?php elseif (currentProfessional() !== null): ?>
             <span class="nav-auth">
-                <span class="nav-company">
-                    <a href="compte.php" title="Gestion de votre compte">
-                        <?= htmlspecialchars(currentProfessional()['company_name'], ENT_QUOTES, 'UTF-8') ?>
-                    </a>
+                <span class="nav-company" title="Connecté en tant que <?= htmlspecialchars(currentProfessional()['company_name'], ENT_QUOTES, 'UTF-8') ?>">
+                    <?= htmlspecialchars(currentProfessional()['company_name'], ENT_QUOTES, 'UTF-8') ?>
                 </span>
                 <span class="nav-auth-divider">·</span>
                 <a href="compte.php" class="nav-account-link">Mon compte</a>

@@ -206,14 +206,18 @@ a:hover {
   line-height: 1;
 }
 
-.nav-company a,
+.nav-company {
+  padding: 0.4rem 0.6rem;
+  color: var(--color-text-muted);
+  font-weight: 500;
+}
+
 .nav-account-link {
   padding: 0.4rem 0.6rem;
   border-radius: 4px;
   transition: color var(--transition-default), background var(--transition-default);
 }
 
-.nav-company a:hover,
 .nav-account-link:hover {
   background: rgba(42, 34, 26, 0.05);
   color: var(--color-accent-gold);
