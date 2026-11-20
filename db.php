@@ -144,13 +144,58 @@ function getProductImage(array $product): string
         return $image;
     }
 
-    $id = (string)($product['id'] ?? 'default');
-    $seed = preg_replace('/[^a-zA-Z0-9_-]/', '', $id);
-    if ($seed === '') {
-        $seed = 'default';
+    $type = mb_strtolower((string)($product['type'] ?? $product['category'] ?? ''));
+    
+    $bottleColor = '#6b4c3b';
+    $liquidColor = '#5a1022';
+    $labelBg = '#fcf8f2';
+    $capColor = '#8c2438';
+    $accentColor = '#c9a34f';
+
+    if (str_contains($type, 'champagne')) {
+        $bottleColor = '#3a4a34';
+        $liquidColor = '#c9a34f';
+        $capColor = '#d4af37';
+        $labelBg = '#faf7f0';
+    } elseif (str_contains($type, 'blanc') || str_contains($type, 'rosé')) {
+        $bottleColor = '#4a5d43';
+        $liquidColor = '#e6c875';
+        $capColor = '#b89d5b';
+        $labelBg = '#faf7f0';
+    } elseif (str_contains($type, 'spiritueux') || str_contains($type, 'cognac') || str_contains($type, 'rhum')) {
+        $bottleColor = '#5c3a21';
+        $liquidColor = '#b8742c';
+        $capColor = '#4a2d18';
+        $labelBg = '#f5ebdc';
     }
 
-    return 'https://picsum.photos/seed/la_vingtaine_' . $seed . '/600/600';
+    $name = htmlspecialchars((string)($product['name'] ?? 'La Vingtaine'), ENT_QUOTES, 'UTF-8');
+    $sub = htmlspecialchars((string)($product['region'] ?? 'Grand Cru'), ENT_QUOTES, 'UTF-8');
+
+    $svg = <<<SVG
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 500" width="100%" height="100%">
+  <rect width="400" height="500" fill="#f8f3eb" rx="12"/>
+  <circle cx="200" cy="240" r="150" fill="#f0e6d8" opacity="0.5"/>
+  <g transform="translate(100, 40)">
+    <!-- Capsule -->
+    <path d="M85 45 L115 45 L118 85 L82 85 Z" fill="{$capColor}"/>
+    <!-- Neck -->
+    <path d="M86 85 L114 85 L118 160 L82 160 Z" fill="{$bottleColor}"/>
+    <!-- Body -->
+    <path d="M82 160 Q60 190 55 240 L55 400 Q55 415 70 415 L130 415 Q145 415 145 400 L145 240 Q140 190 118 160 Z" fill="{$bottleColor}"/>
+    <!-- Reflection/Shine -->
+    <path d="M68 240 Q65 200 84 170 L90 170 Q75 200 75 240 L75 395 L68 395 Z" fill="#ffffff" opacity="0.25"/>
+    <!-- Label -->
+    <rect x="65" y="240" width="70" height="110" rx="4" fill="{$labelBg}" stroke="{$accentColor}" stroke-width="1.5"/>
+    <rect x="70" y="245" width="60" height="100" rx="2" fill="none" stroke="{$accentColor}" stroke-width="0.5" stroke-dasharray="2,2"/>
+    <text x="100" y="280" font-family="Cormorant Garamond, serif" font-size="11" font-weight="bold" fill="#3a2518" text-anchor="middle">LA VINGTAINE</text>
+    <line x1="80" y1="290" x2="120" y2="290" stroke="{$accentColor}" stroke-width="0.8"/>
+    <text x="100" y="315" font-family="Inter, sans-serif" font-size="8" fill="#6e4530" text-anchor="middle">SÉLECTION</text>
+  </g>
+</svg>
+SVG;
+
+    return 'data:image/svg+xml;utf8,' . rawurlencode($svg);
 }
 
 function getProductImageById(string $productId): string
@@ -171,8 +216,7 @@ function getProductImageById(string $productId): string
         }
     }
 
-    $seed = preg_replace('/[^a-zA-Z0-9_-]/', '', $productId) ?: 'default';
-    return 'https://picsum.photos/seed/la_vingtaine_' . $seed . '/600/600';
+    return getProductImage(['id' => $productId, 'type' => 'vin']);
 }
 
 function initializeDatabase(PDO $pdo): void
