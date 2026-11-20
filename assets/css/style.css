@@ -179,7 +179,7 @@ a:hover {
   padding: 0.4rem 0.6rem;
   border-radius: 4px;
   position: relative;
-  transition: color var(--transition-default);
+  transition: color var(--transition-default), background var(--transition-default);
 }
 
 .nav a:hover {
@@ -190,6 +190,57 @@ a:hover {
 .nav a.is-active {
   color: var(--color-accent-gold);
   font-weight: 600;
+}
+
+.nav-auth {
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm);
+}
+
+.nav-auth .nav-sep,
+.nav-auth .nav-auth-divider {
+  color: rgba(42, 34, 26, 0.25);
+  font-weight: 300;
+  font-size: 1.1rem;
+  line-height: 1;
+}
+
+.nav-company a,
+.nav-account-link {
+  padding: 0.4rem 0.6rem;
+  border-radius: 4px;
+  transition: color var(--transition-default), background var(--transition-default);
+}
+
+.nav-company a:hover,
+.nav-account-link:hover {
+  background: rgba(42, 34, 26, 0.05);
+  color: var(--color-accent-gold);
+}
+
+.nav-logout {
+  background: transparent;
+  border: 1px solid rgba(42, 34, 26, 0.2);
+  color: var(--color-text-main);
+  padding: 0.4rem 0.8rem;
+  font-size: 0.9rem;
+  font-weight: 500;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: all var(--transition-default);
+}
+
+.nav-logout:hover {
+  background: rgba(42, 34, 26, 0.08);
+  color: var(--color-accent-gold);
+  border-color: rgba(42, 34, 26, 0.3);
+}
+
+.logout-form {
+  margin: 0;
+  display: flex;
+  align-items: center;
 }
 
 .hero-scroll {
@@ -759,6 +810,7 @@ button:disabled {
 
   .logout-form {
     width: 100%;
+    justify-content: center;
   }
 
   .nav-logout {

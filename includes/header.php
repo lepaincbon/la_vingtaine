@@ -74,7 +74,9 @@ $currentPage = $currentPage ?? '';
                         <?= htmlspecialchars(currentProfessional()['company_name'], ENT_QUOTES, 'UTF-8') ?>
                     </a>
                 </span>
+                <span class="nav-auth-divider">·</span>
                 <a href="compte.php" class="nav-account-link">Mon compte</a>
+                <span class="nav-auth-divider">·</span>
                 <form method="post" action="logout.php" class="logout-form">
                     <?= csrfField() ?>
                     <button type="submit" class="nav-logout">Déconnexion</button>
