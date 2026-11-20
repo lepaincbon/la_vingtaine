@@ -227,9 +227,10 @@ a {
 }
 
 .products-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
-  gap: 1rem;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-start;
+  gap: 1.2rem;
 }
 
 .product-card {
@@ -237,12 +238,16 @@ a {
   border: 1px solid rgba(76, 47, 31, 0.1);
   border-radius: 14px;
   padding: 1rem;
+  width: 100%;
+  max-width: 240px;
+  display: flex;
+  flex-direction: column;
 }
 
 .product-card-image {
   width: 100%;
-  height: 140px;
-  object-fit: cover;
+  aspect-ratio: 3 / 4;
+  object-fit: contain;
   border-radius: 10px;
   margin-bottom: 0.6rem;
   background: var(--offwhite);
@@ -250,12 +255,14 @@ a {
 
 .product-detail-image {
   width: 100%;
-  max-width: 360px;
-  height: auto;
-  border-radius: 14px;
-  margin: 0 auto 1.4rem;
+  max-width: 220px;
+  aspect-ratio: 3 / 4;
+  object-fit: contain;
+  border-radius: 12px;
+  margin: 0 0 1.2rem 0;
   display: block;
-  box-shadow: 0 6px 20px rgba(76, 47, 31, 0.12);
+  box-shadow: 0 4px 16px rgba(76, 47, 31, 0.1);
+  background: var(--offwhite);
 }
 
 .cart-item-image {
@@ -293,8 +300,8 @@ a {
   border: 1px solid rgba(76, 47, 31, 0.1);
   border-radius: 18px;
   padding: 1.6rem;
-  max-width: 880px;
-  margin: 0 auto;
+  max-width: 640px;
+  margin: 0;
 }
 
 .product-detail-card.is-exception {
