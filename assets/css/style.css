@@ -405,6 +405,12 @@ button:disabled {
   flex-wrap: wrap;
 }
 
+.auth-hint {
+  flex-basis: 100%;
+  margin: 0 0 0.4rem 0;
+  color: #5f4b3f;
+}
+
 .selection-actions form {
   display: grid;
   gap: 0.6rem;

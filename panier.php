@@ -59,10 +59,9 @@ $remainingAmount = max(0.0, $minimumOrderAmount - $cartTotal);
             <?php if ($pro !== null): ?>
                 <a class="primary-link" href="selection.php">Valider la sélection</a>
             <?php else: ?>
-                <p> Pour finaliser votre commande, merci de vous identifier en tant que professionnel.
-                <a href="register.php">Créer un accès professionnel</a> ou
-                <a href="login.php">vous connecter</a>.
-                </p>
+                <p class="auth-hint">Pour finaliser votre commande, merci de vous identifier en tant que professionnel.</p>
+                <a class="primary-link" href="register.php">Créer un compte</a>
+                <a class="secondary-link" href="login.php">Se connecter</a>
             <?php endif; ?>
             <a class="secondary-button-link" href="catalogue.php">Continuer vos achats</a>
         </div>
