@@ -229,7 +229,7 @@ a {
 .products-grid {
   display: flex;
   flex-wrap: wrap;
-  justify-content: flex-start;
+  justify-content: center;
   gap: 1.2rem;
 }
 
@@ -259,7 +259,7 @@ a {
   aspect-ratio: 3 / 4;
   object-fit: contain;
   border-radius: 12px;
-  margin: 0 0 1.2rem 0;
+  margin: 0 auto 1.2rem auto;
   display: block;
   box-shadow: 0 4px 16px rgba(76, 47, 31, 0.1);
   background: var(--offwhite);
@@ -301,7 +301,7 @@ a {
   border-radius: 18px;
   padding: 1.6rem;
   max-width: 640px;
-  margin: 0;
+  margin: 0 auto;
 }
 
 .product-detail-card.is-exception {
