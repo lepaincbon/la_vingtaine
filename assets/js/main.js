@@ -19,9 +19,11 @@ import * as THREE from 'three';
   window.addEventListener('load', hideLoader);
   window.addEventListener('pageshow', hideLoader);
   document.addEventListener('DOMContentLoaded', () => {
-    setTimeout(hideLoader, 1200);
+    // Hide faster on DOM ready, but give it a tiny bit of "fancy" breathing room
+    setTimeout(hideLoader, 500);
   });
-  setTimeout(hideLoader, 3000);
+  // Safety fallback
+  setTimeout(hideLoader, 2000);
 
   const titleEl = document.getElementById('hero-bottle-title');
   const metaEl = document.getElementById('hero-bottle-meta');
