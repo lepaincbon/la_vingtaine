@@ -19,8 +19,8 @@ import * as THREE from 'three';
   window.addEventListener('load', hideLoader);
   window.addEventListener('pageshow', hideLoader);
   document.addEventListener('DOMContentLoaded', () => {
-    // Hide faster on DOM ready, but give it a tiny bit of "fancy" breathing room
-    setTimeout(hideLoader, 500);
+    // Hide immediately on DOM ready for better perceived speed
+    hideLoader();
   });
   // Safety fallback
   setTimeout(hideLoader, 2000);

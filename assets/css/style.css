@@ -52,7 +52,7 @@ body {
 
 .section {
   opacity: 0;
-  animation: fadeIn 0.8s var(--transition-default) forwards;
+  animation: fadeIn 0.6s var(--transition-default) forwards;
   will-change: opacity, transform;
 }
 

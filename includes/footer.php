@@ -17,11 +17,11 @@ $loadThreeScene = $loadThreeScene ?? false;
 <script type="importmap">
 {
   "imports": {
-    "three": "./node_modules/three/build/three.module.js"
+    "three": "https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js"
   }
 }
 </script>
-<script type="module" src="assets/js/main.js"></script>
+<script type="module" src="assets/js/main.js" async></script>
 <?php endif; ?>
 </body>
 </html>
