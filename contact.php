@@ -16,7 +16,10 @@ if (session_status() !== PHP_SESSION_ACTIVE) {
     session_start();
 }
 
-requireAuth();
+// La page Contact & Fournisseur est accessible sans compte.
+// Le compte professionnel reste optionnel : il permet de pré-remplir
+// la société et l'e-mail, mais l'envoi de la demande est soumis à la
+// validation obligatoire d'une société et d'un e-mail valide.
 
 $pdo = getPDO();
 $usingDb = $pdo instanceof PDO;

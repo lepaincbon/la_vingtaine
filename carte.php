@@ -189,6 +189,10 @@ if (is_file($svgPath) && is_readable($svgPath)) {
 
                             <p class="product-price">Tarif pro HT : €<?= number_format((float)$product['price'], 2) ?></p>
 
+                                <a href="produit.php?id=<?= htmlspecialchars($product['id'], ENT_QUOTES, 'UTF-8') ?>" class="product-detail-link">
+                                    Détails du vin
+                                </a>
+
                                 <form method="post" class="add-form">
                                     <input type="hidden" name="action" value="add_to_cart">
                                     <input type="hidden" name="id" value="<?= htmlspecialchars($product['id'], ENT_QUOTES, 'UTF-8') ?>">
