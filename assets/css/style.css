@@ -44,6 +44,20 @@ body {
   -webkit-font-smoothing: antialiased;
 }
 
+body {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+main {
+  flex: 1;
+}
+
+.footer {
+  margin-top: auto;
+}
+
 /* Fancy Entrance Animation - Optimized to prevent flickering */
 @keyframes fadeIn {
   from { opacity: 0; transform: translateY(15px); }
@@ -761,6 +775,88 @@ button:disabled {
       transform: translateY(0);
     }
   }
+}
+
+/* Account page */
+.account-forms-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+    gap: 1.6rem;
+    margin-top: 1.4rem;
+}
+
+.account-form-card {
+    background: var(--color-bg-white);
+    border: 1px solid var(--color-border);
+    border-radius: 16px;
+    padding: 1.6rem;
+    box-shadow: 0 8px 28px rgba(42, 34, 26, 0.05);
+}
+
+.account-form-card h3 {
+    margin: 0 0 0.3rem;
+    color: var(--color-brand-dark);
+    font-size: 1.25rem;
+}
+
+.account-form-subtitle {
+    margin: 0 0 1.2rem;
+    color: var(--color-text-muted);
+    font-size: 0.9rem;
+}
+
+.account-form-card .auth-form {
+    display: grid;
+    gap: 1rem;
+}
+
+.account-form-card .auth-form label {
+    display: grid;
+    gap: 0.35rem;
+    font-size: 0.9rem;
+    font-weight: 500;
+}
+
+.nav-account-link {
+    padding: 0.3rem 0.6rem;
+    border-radius: 4px;
+    font-size: 0.85rem;
+    font-weight: 500;
+    transition: background var(--transition-default);
+}
+
+.nav-account-link:hover {
+    background: rgba(42, 34, 26, 0.08);
+    color: var(--color-accent-gold);
+}
+
+input:disabled,
+input[disabled] {
+    background: var(--beige-200);
+    color: var(--color-text-muted);
+    cursor: not-allowed;
+    opacity: 1;
+}
+
+.cgu-accept {
+    display: flex;
+    align-items: flex-start;
+    gap: 0.5rem;
+    font-size: 0.88rem;
+    font-weight: 400;
+    cursor: pointer;
+}
+
+.cgu-accept input[type="checkbox"] {
+    width: auto;
+    margin-top: 0.2rem;
+    flex-shrink: 0;
+}
+
+@media (max-width: 768px) {
+    .account-forms-grid {
+        grid-template-columns: 1fr;
+    }
 }
 
 /* Premium Polish additions */

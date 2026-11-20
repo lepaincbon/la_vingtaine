@@ -19,6 +19,7 @@ $company = trim((string)($_POST['company_name'] ?? ''));
 $email = trim((string)($_POST['customer_email'] ?? ''));
 $password = (string)($_POST['password'] ?? '');
 $passwordConfirm = (string)($_POST['password_confirm'] ?? '');
+$acceptCgu = isset($_POST['accept_cgu']);
 
 $error = '';
 
@@ -33,6 +34,8 @@ if (($_POST['action'] ?? '') === 'register') {
         $error = 'Le mot de passe doit contenir au moins 8 caractères.';
     } elseif ($password !== $passwordConfirm) {
         $error = 'Les deux mots de passe ne correspondent pas.';
+    } elseif (!$acceptCgu) {
+        $error = 'Merci d’accepter les Conditions Générales d’Utilisation pour créer votre compte.';
     } elseif ($usingDb) {
         $exists = $pdo->prepare("SELECT COUNT(*) FROM professionals WHERE customer_email = :email");
         $exists->execute([':email' => $email]);
@@ -102,6 +105,10 @@ require_once __DIR__ . '/includes/header.php';
             <label>
                 Confirmer le mot de passe
                 <input type="password" name="password_confirm" required minlength="8" placeholder="Répétez le mot de passe">
+            </label>
+            <label class="cgu-accept">
+                <input type="checkbox" name="accept_cgu" required>
+                <span>J’accepte les <a href="cgu.php" target="_blank" rel="noopener noreferrer">Conditions Générales d’Utilisation</a>.</span>
             </label>
             <button type="submit" class="primary">Créer mon accès</button>
         </form>

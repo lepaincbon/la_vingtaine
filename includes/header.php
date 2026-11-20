@@ -69,7 +69,12 @@ $currentPage = $currentPage ?? '';
             </span>
         <?php elseif (currentProfessional() !== null): ?>
             <span class="nav-auth">
-                <span class="nav-company"><?= htmlspecialchars(currentProfessional()['company_name'], ENT_QUOTES, 'UTF-8') ?></span>
+                <span class="nav-company">
+                    <a href="compte.php" title="Gestion de votre compte">
+                        <?= htmlspecialchars(currentProfessional()['company_name'], ENT_QUOTES, 'UTF-8') ?>
+                    </a>
+                </span>
+                <a href="compte.php" class="nav-account-link">Mon compte</a>
                 <form method="post" action="logout.php" class="logout-form">
                     <?= csrfField() ?>
                     <button type="submit" class="nav-logout">Déconnexion</button>
