@@ -16,7 +16,7 @@ $usingDb = $pdo instanceof PDO;
 
 if ($usingDb) {
     $allProductsStmt = $pdo->query(
-        "SELECT id, name, region, category, type, volume, abv, grape, price, is_exception, description
+        "SELECT id, name, region, category, type, volume, abv, grape, price, is_exception, description, image
          FROM products
          ORDER BY category ASC, name ASC"
     );
@@ -28,6 +28,9 @@ if ($usingDb) {
 $productsById = [];
 foreach ($allProducts as $row) {
     $productsById[(string)$row['id']] = $row;
+    if (!isset($row['image'])) {
+        $row['image'] = '';
+    }
 }
 
 $catalog = [];
@@ -46,7 +49,8 @@ foreach ($allProducts as $row) {
         'grape' => (string)$row['grape'],
         'price' => (float)$row['price'],
         'exception' => ((int)$row['is_exception']) === 1,
-        'description' => (string)$row['description']
+        'description' => (string)$row['description'],
+        'image' => (string)($row['image'] ?? '')
     ];
 }
 
@@ -125,6 +129,7 @@ $isProfessional = currentProfessional() !== null;
         <div class="products-grid">
             <?php foreach ($products as $product): ?>
                 <article class="product-card <?= $product['exception'] ? 'is-exception' : '' ?>">
+                    <img class="product-card-image" src="<?= htmlspecialchars(getProductImage($product), ENT_QUOTES, 'UTF-8') ?>" alt="<?= htmlspecialchars($product['name'], ENT_QUOTES, 'UTF-8') ?>" loading="lazy">
                     <h3><?= htmlspecialchars($product['name'], ENT_QUOTES, 'UTF-8') ?></h3>
                     <p class="product-meta">
                         <?= htmlspecialchars($product['type'], ENT_QUOTES, 'UTF-8') ?> •

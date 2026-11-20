@@ -13,7 +13,7 @@ $usingDb = $pdo instanceof PDO;
 
 if ($usingDb) {
     $allProductsStmt = $pdo->query(
-        "SELECT id, name, region, category, type, volume, abv, grape, price, is_exception, description
+        "SELECT id, name, region, category, type, volume, abv, grape, price, is_exception, description, image
          FROM products
          ORDER BY category ASC, name ASC"
     );
@@ -28,7 +28,8 @@ foreach ($allProducts as $row) {
         'name' => (string)$row['name'],
         'type' => (string)$row['type'],
         'region' => (string)$row['region'],
-        'description' => (string)$row['description']
+        'description' => (string)$row['description'],
+        'image' => (string)($row['image'] ?? '')
     ];
 }
 

@@ -75,7 +75,8 @@ function getSeedProducts(): array
             'grape' => 'Pinot Noir, Chardonnay',
             'price' => 42.00,
             'is_exception' => 0,
-            'description' => 'Bulles fines, notes de fruits blancs et finale minérale.'
+            'description' => 'Bulles fines, notes de fruits blancs et finale minérale.',
+            'image' => ''
         ],
         [
             'id' => 'ch-002',
@@ -88,7 +89,8 @@ function getSeedProducts(): array
             'grape' => '100% Chardonnay',
             'price' => 98.00,
             'is_exception' => 1,
-            'description' => 'Cuvée millésimée exceptionnelle avec un grand potentiel de garde.'
+            'description' => 'Cuvée millésimée exceptionnelle avec un grand potentiel de garde.',
+            'image' => ''
         ],
         [
             'id' => 'bg-001',
@@ -101,7 +103,8 @@ function getSeedProducts(): array
             'grape' => 'Chardonnay',
             'price' => 29.00,
             'is_exception' => 0,
-            'description' => 'Profil vif et élégant, aux notes d’agrumes et de craie.'
+            'description' => 'Profil vif et élégant, aux notes d’agrumes et de craie.',
+            'image' => ''
         ],
         [
             'id' => 'bdx-001',
@@ -114,7 +117,8 @@ function getSeedProducts(): array
             'grape' => 'Merlot, Cabernet Franc',
             'price' => 46.00,
             'is_exception' => 0,
-            'description' => 'Tanins soyeux, fruits noirs et boisé raffiné.'
+            'description' => 'Tanins soyeux, fruits noirs et boisé raffiné.',
+            'image' => ''
         ],
         [
             'id' => 'sp-001',
@@ -127,9 +131,48 @@ function getSeedProducts(): array
             'grape' => 'Ugni Blanc',
             'price' => 120.00,
             'is_exception' => 0,
-            'description' => 'Arômes complexes de fruits secs, vanille et épices.'
+            'description' => 'Arômes complexes de fruits secs, vanille et épices.',
+            'image' => ''
         ]
     ];
+}
+
+function getProductImage(array $product): string
+{
+    $image = (string)($product['image'] ?? '');
+    if ($image !== '') {
+        return $image;
+    }
+
+    $id = (string)($product['id'] ?? 'default');
+    $seed = preg_replace('/[^a-zA-Z0-9_-]/', '', $id);
+    if ($seed === '') {
+        $seed = 'default';
+    }
+
+    return 'https://picsum.photos/seed/la_vingtaine_' . $seed . '/600/600';
+}
+
+function getProductImageById(string $productId): string
+{
+    $pdo = getPDO();
+    if ($pdo instanceof PDO) {
+        $stmt = $pdo->prepare("SELECT image FROM products WHERE id = :id");
+        $stmt->execute([':id' => $productId]);
+        $row = $stmt->fetch();
+        if ($row && (string)($row['image'] ?? '') !== '') {
+            return (string)$row['image'];
+        }
+    } else {
+        foreach (getSeedProducts() as $seedProduct) {
+            if ((string)$seedProduct['id'] === $productId) {
+                return getProductImage($seedProduct);
+            }
+        }
+    }
+
+    $seed = preg_replace('/[^a-zA-Z0-9_-]/', '', $productId) ?: 'default';
+    return 'https://picsum.photos/seed/la_vingtaine_' . $seed . '/600/600';
 }
 
 function initializeDatabase(PDO $pdo): void
@@ -146,9 +189,23 @@ function initializeDatabase(PDO $pdo): void
             grape TEXT NOT NULL,
             price REAL NOT NULL,
             is_exception INTEGER NOT NULL DEFAULT 0,
-            description TEXT NOT NULL
+            description TEXT NOT NULL,
+            image TEXT NOT NULL DEFAULT ''
         )"
     );
+
+    // Migration : ajouter la colonne image si elle n'existe pas encore
+    $hasImageColumn = false;
+    $columns = $pdo->query("PRAGMA table_info(products)")->fetchAll();
+    foreach ($columns as $col) {
+        if (isset($col['name']) && $col['name'] === 'image') {
+            $hasImageColumn = true;
+            break;
+        }
+    }
+    if (!$hasImageColumn) {
+        $pdo->exec("ALTER TABLE products ADD COLUMN image TEXT NOT NULL DEFAULT ''");
+    }
 
     $pdo->exec(
         "CREATE TABLE IF NOT EXISTS orders (

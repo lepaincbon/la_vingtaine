@@ -17,7 +17,7 @@ $productId = (string)($_GET['id'] ?? '');
 
 if ($usingDb) {
     $stmt = $pdo->prepare(
-        "SELECT id, name, region, category, type, volume, abv, grape, price, is_exception, description
+        "SELECT id, name, region, category, type, volume, abv, grape, price, is_exception, description, image
          FROM products
          WHERE id = :id"
     );
@@ -31,6 +31,9 @@ if ($usingDb) {
             break;
         }
     }
+}
+if ($product && !isset($product['image'])) {
+    $product['image'] = '';
 }
 
 if (!$product) {
@@ -80,6 +83,7 @@ $isProfessional = currentProfessional() !== null;
             <p>Vous ne trouvez pas cette référence ? <a href="contact.php">Contactez directement le fournisseur</a>.</p>
         <?php else: ?>
             <article class="product-detail-card <?= ((int)$product['is_exception']) === 1 ? 'is-exception' : '' ?>">
+                <img class="product-detail-image" src="<?= htmlspecialchars(getProductImage($product), ENT_QUOTES, 'UTF-8') ?>" alt="<?= htmlspecialchars((string)$product['name'], ENT_QUOTES, 'UTF-8') ?>">
                 <h1><?= htmlspecialchars((string)$product['name'], ENT_QUOTES, 'UTF-8') ?></h1>
 
                 <p class="product-meta">

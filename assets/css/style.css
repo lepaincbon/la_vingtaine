@@ -239,6 +239,34 @@ a {
   padding: 1rem;
 }
 
+.product-card-image {
+  width: 100%;
+  height: 140px;
+  object-fit: cover;
+  border-radius: 10px;
+  margin-bottom: 0.6rem;
+  background: var(--offwhite);
+}
+
+.product-detail-image {
+  width: 100%;
+  max-width: 360px;
+  height: auto;
+  border-radius: 14px;
+  margin: 0 auto 1.4rem;
+  display: block;
+  box-shadow: 0 6px 20px rgba(76, 47, 31, 0.12);
+}
+
+.cart-item-image {
+  width: 56px;
+  height: 56px;
+  object-fit: cover;
+  border-radius: 8px;
+  margin-bottom: 0.4rem;
+  background: var(--offwhite);
+}
+
 .product-card.is-exception {
   border-color: rgba(156, 107, 79, 0.7);
   box-shadow: 0 8px 26px rgba(110, 69, 48, 0.12);

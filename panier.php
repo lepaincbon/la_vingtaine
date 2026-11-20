@@ -16,6 +16,11 @@ $cartTotal = 0.0;
 foreach ($cartItems as $item) {
     $cartTotal += (float)$item['price'] * (int)$item['qty'];
 }
+
+foreach ($cartItems as &$item) {
+    $item['image'] = getProductImageById((string)$item['id']);
+}
+unset($item);
 $minimumOrderAmount = 300.0;
 $remainingAmount = max(0.0, $minimumOrderAmount - $cartTotal);
 ?>
@@ -30,6 +35,7 @@ $remainingAmount = max(0.0, $minimumOrderAmount - $cartTotal);
                     <?php $lineSubtotal = (float)$item['price'] * (int)$item['qty']; ?>
                     <div class="cart-item">
                         <div class="selection-item-main">
+                            <img class="cart-item-image" src="<?= htmlspecialchars((string)($item['image'] ?? ''), ENT_QUOTES, 'UTF-8') ?>" alt="<?= htmlspecialchars((string)$item['name'], ENT_QUOTES, 'UTF-8') ?>">
                             <h3 class="selection-item-name"><?= htmlspecialchars((string)$item['name'], ENT_QUOTES, 'UTF-8') ?></h3>
                             <div class="selection-item-pricing">Prix unitaire HT/Pro : €<?= number_format((float)$item['price'], 2) ?></div>
                             <div class="selection-subtotal">Sous-total : €<?= number_format($lineSubtotal, 2) ?></div>
