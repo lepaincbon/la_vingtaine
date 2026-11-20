@@ -49,6 +49,11 @@ $currentPage = $currentPage ?? '';
 <body>
 <header class="header">
     <a class="logo" href="index.php" aria-label="La Vingtaine — Accueil">La Vingtaine</a>
+    <button class="nav-toggle" id="nav-toggle" aria-label="Ouvrir le menu" aria-expanded="false">
+        <span class="nav-toggle-bar"></span>
+        <span class="nav-toggle-bar"></span>
+        <span class="nav-toggle-bar"></span>
+    </button>
     <nav class="nav">
         <a href="index.php" class="<?= $currentPage === 'home' ? 'is-active' : '' ?>">Accueil</a>
         <a href="catalogue.php" class="<?= $currentPage === 'catalogue' ? 'is-active' : '' ?>">Catalogue & Régions</a>
