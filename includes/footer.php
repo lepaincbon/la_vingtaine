@@ -9,7 +9,7 @@ $loadThreeScene = $loadThreeScene ?? false;
     </p>
     <p>Les prix sont affichés à titre indicatif.</p>
     <p>
-        <a href="https://www.instagram.com/" target="_blank" rel="noopener noreferrer">Instagram</a>
+        <a href="https://www.instagram.com/_lavingtaine/" target="_blank" rel="noopener noreferrer">Instagram</a>
         •
         <a href="cgu.php">CGU</a>
     </p>
