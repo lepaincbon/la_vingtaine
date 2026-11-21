@@ -46,13 +46,24 @@ import * as THREE from 'three';
   const scene = new THREE.Scene();
   scene.background = new THREE.Color(0xf7f1e8);
 
-  const renderer = new THREE.WebGLRenderer({
-    canvas,
-    antialias: true,
-    alpha: true
-  });
+  let renderer;
+  try {
+    renderer = new THREE.WebGLRenderer({
+      canvas,
+      antialias: true,
+      alpha: true,
+      powerPreference: 'high-performance'
+    });
+  } catch (error) {
+    // WebGL indisponible (mode économie d'énergie, vieux téléphone...) :
+    // on retire l'overlay au lieu de bloquer toute la page.
+    console.warn('Scène 3D indisponible :', error);
+    hideLoader();
+    return;
+  }
   renderer.outputColorSpace = THREE.SRGBColorSpace;
-  renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2));
+  const maxPixelRatio = window.innerWidth < 768 ? 1.5 : 2;
+  renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, maxPixelRatio));
 
   const camera = new THREE.PerspectiveCamera(38, 1, 0.1, 100);
   camera.position.set(0, 0.8, 6.2);

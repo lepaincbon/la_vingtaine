@@ -29,7 +29,9 @@ $currentPage = $currentPage ?? '';
 <html lang="fr">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <meta name="theme-color" content="#f9f6f2">
+    <meta name="format-detection" content="telephone=no">
     <link rel="icon" type="image/svg+xml" href="assets/img/favicon.svg">
     <title><?= htmlspecialchars($pageTitle, ENT_QUOTES, 'UTF-8') ?></title>
     <meta name="description" content="<?= htmlspecialchars($pageDescription, ENT_QUOTES, 'UTF-8') ?>">
@@ -42,6 +44,7 @@ $currentPage = $currentPage ?? '';
     <link rel="preload" as="style" href="assets/css/style.css">
     <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,600;0,700;1,400&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet" media="print" onload="this.media='all'">
     <link rel="stylesheet" href="assets/css/style.css">
+    <script src="assets/js/nav.js" defer></script>
     <noscript>
         <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,600;0,700;1,400&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
     </noscript>
@@ -49,12 +52,12 @@ $currentPage = $currentPage ?? '';
 <body>
 <header class="header">
     <a class="logo" href="index.php" aria-label="La Vingtaine — Accueil">La Vingtaine</a>
-    <button class="nav-toggle" id="nav-toggle" aria-label="Ouvrir le menu" aria-expanded="false">
+    <button class="nav-toggle" id="nav-toggle" type="button" aria-label="Ouvrir le menu" aria-controls="primary-nav" aria-expanded="false">
         <span class="nav-toggle-bar"></span>
         <span class="nav-toggle-bar"></span>
         <span class="nav-toggle-bar"></span>
     </button>
-    <nav class="nav">
+    <nav class="nav" id="primary-nav" aria-label="Navigation principale">
         <a href="index.php" class="<?= $currentPage === 'home' ? 'is-active' : '' ?>">Accueil</a>
         <a href="catalogue.php" class="<?= $currentPage === 'catalogue' ? 'is-active' : '' ?>">Catalogue & Régions</a>
         <a href="carte.php" class="<?= $currentPage === 'carte' ? 'is-active' : '' ?>">Carte des Régions</a>
