@@ -75,7 +75,7 @@ $isProfessional = currentProfessional() !== null;
 <main>
     <section class="section">
         <p>
-            <a href="catalogue.php" class="secondary-button-link">← Retour au catalogue</a>
+            <a href="carte.php" class="secondary-button-link">← Retour au catalogue</a>
         </p>
 
         <?php if (!$product): ?>

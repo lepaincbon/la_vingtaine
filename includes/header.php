@@ -77,7 +77,6 @@ $currentPage = $currentPage ?? '';
     </button>
     <nav class="nav" id="primary-nav" aria-label="Navigation principale">
         <a href="index.php" class="<?= $currentPage === 'home' ? 'is-active' : '' ?>">Accueil</a>
-        <a href="catalogue.php" class="<?= $currentPage === 'catalogue' ? 'is-active' : '' ?>">Catalogue & Régions</a>
         <a href="carte.php" class="<?= $currentPage === 'carte' ? 'is-active' : '' ?>">Carte des Régions</a>
         <a href="panier.php" class="<?= $currentPage === 'panier' ? 'is-active' : '' ?>">Liste des vins sélectionnés (<?= $cartBottleCount ?>)</a>
         <a href="apropos.php" class="<?= $currentPage === 'apropos' ? 'is-active' : '' ?>">À propos</a>

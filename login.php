@@ -11,7 +11,7 @@ if (isset($_COOKIE['remember_pro']) && $_COOKIE['remember_pro'] !== '') {
     $pro = currentProfessional();
     if ($pro !== null) {
         // Already logged in via session
-        header('Location: catalogue.php');
+        header('Location: carte.php');
         exit;
     }
     // Verify the remember me cookie against the database
@@ -31,7 +31,7 @@ if (isset($_COOKIE['remember_pro']) && $_COOKIE['remember_pro'] !== '') {
                 'company_name' => (string)$found['company_name'],
                 'customer_email' => (string)$found['customer_email'],
             ]);
-            header('Location: catalogue.php');
+            header('Location: carte.php');
             exit;
         }
     }
@@ -39,7 +39,7 @@ if (isset($_COOKIE['remember_pro']) && $_COOKIE['remember_pro'] !== '') {
 
 $pro = currentProfessional();
 if ($pro !== null) {
-    header('Location: catalogue.php');
+    header('Location: carte.php');
     exit;
 }
 
@@ -70,7 +70,7 @@ if (($_POST['action'] ?? '') === 'login') {
             && (int)$found['is_active'] === 1
             && password_verify($password, (string)$found['password_hash'])) {
             loginProfessional($found);
-            header('Location: ' . (($_GET['redirect'] ?? null) && (string)$_GET['redirect'] !== '' ? (string)$_GET['redirect'] : 'catalogue.php'));
+            header('Location: ' . (($_GET['redirect'] ?? null) && (string)$_GET['redirect'] !== '' ? (string)$_GET['redirect'] : 'carte.php'));
             exit;
         }
         $error = 'Identifiants incorrects ou compte désactivé.';

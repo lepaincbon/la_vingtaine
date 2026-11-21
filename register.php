@@ -8,7 +8,7 @@ require_once __DIR__ . '/db.php';
 
 $pro = currentProfessional();
 if ($pro !== null) {
-    header('Location: catalogue.php');
+    header('Location: carte.php');
     exit;
 }
 
@@ -58,7 +58,7 @@ if (($_POST['action'] ?? '') === 'register') {
 
             if ($created) {
                 loginProfessional($created);
-                header('Location: catalogue.php');
+                header('Location: carte.php');
                 exit;
             }
             $error = 'L’inscription a échoué. Merci de réessayer.';

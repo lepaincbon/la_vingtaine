@@ -114,7 +114,7 @@ $items = json_decode($lastOrder['items_json'] ?? '[]', true) ?: [];
         </ul>
 
         <p style="margin-top: 2rem;">
-            <a class="secondary-button-link" href="catalogue.php">Continuer vos achats</a>
+            <a class="secondary-button-link" href="carte.php">Continuer vos achats</a>
             <a class="primary-link" href="contact.php">Besoin d'aide ?</a>
         </p>
     </section>

@@ -1101,3 +1101,20 @@ input[disabled] {
 .hero__canvas-wrap {
   box-shadow: 0 20px 40px rgba(42, 34, 26, 0.08);
 }
+
+/* Liens produits : mêmes styles que le contenu d'origine */
+.hero-bottle-link,
+.product-card-media-link,
+.product-card-title-link {
+  color: inherit;
+  text-decoration: none;
+}
+
+.hero-bottle-link,
+.product-card-media-link {
+  display: block;
+}
+
+#bottle-scene {
+  cursor: pointer;
+}

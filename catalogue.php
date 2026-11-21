@@ -1,6 +1,17 @@
 <?php
 declare(strict_types=1);
 
+// Le catalogue est désormais fusionné avec la carte des régions.
+$redirectParams = [];
+foreach (['region', 'added'] as $param) {
+    if (isset($_GET[$param]) && is_string($_GET[$param]) && $_GET[$param] !== '') {
+        $redirectParams[$param] = $_GET[$param];
+    }
+}
+$redirectUrl = 'carte.php' . ($redirectParams !== [] ? '?' . http_build_query($redirectParams) : '');
+header('Location: ' . $redirectUrl, true, 301);
+exit;
+
 $pageTitle = 'La Vingtaine | Catalogue & Régions';
 $pageDescription = 'Catalogue B2B La Vingtaine par régions viticoles.';
 $currentPage = 'catalogue';
@@ -129,8 +140,10 @@ $isProfessional = currentProfessional() !== null;
         <div class="products-grid">
             <?php foreach ($products as $product): ?>
                 <article class="product-card <?= $product['exception'] ? 'is-exception' : '' ?>">
-                    <img class="product-card-image" src="<?= htmlspecialchars(getProductImage($product), ENT_QUOTES, 'UTF-8') ?>" alt="<?= htmlspecialchars($product['name'], ENT_QUOTES, 'UTF-8') ?>" loading="lazy">
-                    <h3><?= htmlspecialchars($product['name'], ENT_QUOTES, 'UTF-8') ?></h3>
+                    <a class="product-card-media-link" href="produit.php?id=<?= htmlspecialchars($product['id'], ENT_QUOTES, 'UTF-8') ?>">
+                        <img class="product-card-image" src="<?= htmlspecialchars(getProductImage($product), ENT_QUOTES, 'UTF-8') ?>" alt="<?= htmlspecialchars($product['name'], ENT_QUOTES, 'UTF-8') ?>" loading="lazy">
+                    </a>
+                    <h3><a class="product-card-title-link" href="produit.php?id=<?= htmlspecialchars($product['id'], ENT_QUOTES, 'UTF-8') ?>"><?= htmlspecialchars($product['name'], ENT_QUOTES, 'UTF-8') ?></a></h3>
                     <p class="product-meta">
                         <?= htmlspecialchars($product['type'], ENT_QUOTES, 'UTF-8') ?> •
                         <?= htmlspecialchars($product['volume'], ENT_QUOTES, 'UTF-8') ?> •

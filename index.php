@@ -25,6 +25,7 @@ if ($usingDb) {
 $heroBottles = [];
 foreach ($allProducts as $row) {
     $heroBottles[] = [
+        'id' => (string)$row['id'],
         'name' => (string)$row['name'],
         'type' => (string)$row['type'],
         'region' => (string)$row['region'],
@@ -62,9 +63,11 @@ if (!$exceptionProduct && count($allProducts) > 0) {
                 <p class="hero-intro">Défilez pour découvrir chaque bouteille, sa région et son profil de dégustation.</p>
 
                 <div id="hero-bottle-description">
-                    <h3 id="hero-bottle-title">-</h3>
-                    <p id="hero-bottle-meta">-</p>
-                    <p id="hero-bottle-text">-</p>
+                    <a id="hero-bottle-link" class="hero-bottle-link" href="carte.php">
+                        <h3 id="hero-bottle-title">-</h3>
+                        <p id="hero-bottle-meta">-</p>
+                        <p id="hero-bottle-text">-</p>
+                    </a>
                 </div>
             </div>
         </div>
@@ -81,7 +84,7 @@ if (!$exceptionProduct && count($allProducts) > 0) {
             <p>Découvrez notre sélection premium pour les établissements exigeants.</p>
         <?php endif; ?>
         <p>
-            <a class="secondary-button-link" href="catalogue.php">Découvrir le catalogue B2B</a>
+            <a class="secondary-button-link" href="carte.php">Découvrir le catalogue B2B</a>
         </p>
     </section>
 </main>

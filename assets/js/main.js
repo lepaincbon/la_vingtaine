@@ -29,6 +29,7 @@ import * as THREE from 'three';
   const metaEl = document.getElementById('hero-bottle-meta');
   const textEl = document.getElementById('hero-bottle-text');
   const descriptionWrap = document.getElementById('hero-bottle-description');
+  const descriptionLink = document.getElementById('hero-bottle-link');
   const jsonDataEl = document.getElementById('hero-bottles-data');
   const scrollSection = document.getElementById('hero-scroll');
 
@@ -144,16 +145,28 @@ import * as THREE from 'three';
   setSize();
   window.addEventListener('resize', setSize);
 
+  const getProductUrl = (index) => {
+    const data = bottleDescriptions[index];
+    if (!data || !data.id) return 'carte.php';
+    return 'produit.php?id=' + encodeURIComponent(data.id);
+  };
+
   const setDescription = (index) => {
     const data = bottleDescriptions[index];
     if (!data || !titleEl || !metaEl || !textEl) return;
     titleEl.textContent = data.name || '—';
     metaEl.textContent = `${data.type || ''}${data.region ? ' • ' + data.region : ''}`;
     textEl.textContent = data.description || '—';
+    if (descriptionLink) descriptionLink.href = getProductUrl(index);
   };
 
   let currentIndex = 0;
   setDescription(0);
+
+  // Un clic sur la bouteille 3D ouvre la fiche du produit affiché.
+  canvas.addEventListener('click', () => {
+    window.location.href = getProductUrl(currentIndex);
+  });
 
   const getSectionProgress = () => {
     if (!scrollSection) return 0;

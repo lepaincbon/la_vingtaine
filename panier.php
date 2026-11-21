@@ -48,7 +48,7 @@ $remainingAmount = max(0.0, $minimumOrderAmount - $cartTotal);
             </div>
         <?php else: ?>
             <p>Votre sélection est vide.</p>
-            <p><a class="secondary-button-link" href="catalogue.php">Découvrir le catalogue</a></p>
+            <p><a class="secondary-button-link" href="carte.php">Découvrir le catalogue</a></p>
         <?php endif; ?>
 
         <div class="selection-summary">
@@ -69,7 +69,7 @@ $remainingAmount = max(0.0, $minimumOrderAmount - $cartTotal);
                 <a class="primary-link" href="register.php">Créer un compte</a>
                 <a class="secondary-link" href="login.php">Se connecter</a>
             <?php endif; ?>
-            <a class="secondary-button-link" href="catalogue.php">Continuer vos achats</a>
+            <a class="secondary-button-link" href="carte.php">Continuer vos achats</a>
         </div>
     </section>
 </main>
