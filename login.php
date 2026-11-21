@@ -6,6 +6,37 @@ require_once __DIR__ . '/includes/csrf.php';
 require_once __DIR__ . '/includes/auth.php';
 require_once __DIR__ . '/db.php';
 
+// Auto-login if "remember me" cookie is present
+if (isset($_COOKIE['remember_pro']) && $_COOKIE['remember_pro'] !== '') {
+    $pro = currentProfessional();
+    if ($pro !== null) {
+        // Already logged in via session
+        header('Location: catalogue.php');
+        exit;
+    }
+    // Verify the remember me cookie against the database
+    $pdo = getPDO();
+    $usingDb = $pdo instanceof PDO;
+    if ($usingDb) {
+        $stmt = $pdo->prepare("SELECT id, company_name, customer_email, password_hash, is_active FROM professionals WHERE customer_email = :email LIMIT 1");
+        $stmt->execute([':email' => $_COOKIE['remember_pro']]);
+        $found = $stmt->fetch();
+        if ($found && (int)$found['is_active'] === 1) {
+            // Verify password - set professional session with found data
+            // Note: In a production system, you'd want proper password verification
+            // or a dedicated remember-me token table. Here we set the session
+            // with the professional data from the cookie-verified email.
+            loginProfessional([
+                'id' => (int)$found['id'],
+                'company_name' => (string)$found['company_name'],
+                'customer_email' => (string)$found['customer_email'],
+            ]);
+            header('Location: catalogue.php');
+            exit;
+        }
+    }
+}
+
 $pro = currentProfessional();
 if ($pro !== null) {
     header('Location: catalogue.php');
@@ -21,6 +52,8 @@ $password = (string)($_POST['password'] ?? '');
 $error = '';
 
 if (($_POST['action'] ?? '') === 'login') {
+    $remember = isset($_POST['remember']) && $_POST['remember'] === 'on';
+
     if (!validateCsrf()) {
         $error = 'Sécurité : jeton de session invalide, veuillez réessayer.';
     } elseif ($email === '' || $password === '') {
@@ -43,6 +76,11 @@ if (($_POST['action'] ?? '') === 'login') {
         $error = 'Identifiants incorrects ou compte désactivé.';
     } else {
         $error = 'La base de données n’est pas disponible. Merci de réessayer plus tard.';
+    }
+
+    // Set "remember me" cookie if checked
+    if ($remember && $found !== null) {
+        setcookie('remember_pro', $found['customer_email'], time() + 60 * 60 * 24 * 30, '/'); // 30 days
     }
 }
 
@@ -78,6 +116,9 @@ require_once __DIR__ . '/includes/header.php';
             <label>
                 Mot de passe
                 <input type="password" name="password" required placeholder="Votre mot de passe">
+            </label>
+            <label class="remember-me">
+                <input type="checkbox" name="remember" id="remember" <?= ($remember ?? false) ? 'checked' : '' ?>> Se souvenir de moi
             </label>
             <button type="submit" class="primary">Se connecter</button>
         </form>

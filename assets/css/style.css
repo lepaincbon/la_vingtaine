@@ -909,6 +909,21 @@ input[disabled] {
     flex-shrink: 0;
 }
 
+.remember-me {
+    display: flex;
+    align-items: center;
+    gap: 0.45rem;
+    font-size: 0.9rem;
+    font-weight: 400;
+    cursor: pointer;
+}
+
+.remember-me input[type="checkbox"] {
+    width: auto;
+    margin: 0;
+    flex-shrink: 0;
+}
+
 @media (max-width: 768px) {
     .account-forms-grid {
         grid-template-columns: 1fr;
