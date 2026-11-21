@@ -33,8 +33,8 @@ function loginProfessional(array $professional): void
 function logoutProfessional(): void
 {
     $_SESSION = [];
-    if (session_cookie_name() !== '') {
-        setcookie(session_cookie_name(), '', time() - 3600, '/');
+    if (session_name() !== '') {
+        setcookie(session_name(), '', time() - 3600, '/');
     }
     session_destroy();
 }
