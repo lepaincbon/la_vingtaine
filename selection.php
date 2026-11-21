@@ -83,6 +83,9 @@ if ($action === 'validate_order') {
     } elseif ($customerEmail === '' || !filter_var($customerEmail, FILTER_VALIDATE_EMAIL)) {
         $message = 'Merci de renseigner une adresse e-mail professionnelle valide.';
         $messageType = 'error';
+    } elseif (empty($_POST['certify_adult'])) {
+        $message = 'Vous devez certifier être majeur(e) et agir en qualité de professionnel pour valider la sélection.';
+        $messageType = 'error';
     } else {
         if ($usingDb) {
             $orderInsert = $pdo->prepare(
@@ -97,14 +100,14 @@ if ($action === 'validate_order') {
             ]);
             $_SESSION['last_order_id'] = (int)$pdo->lastInsertId();
             $orderId = $_SESSION['last_order_id'];
-            
+
             // Générer PDF et envoyer e-mail
             $pdfContent = generateOrderPdfOutput($orderId, [
                 'created_at' => date('Y-m-d H:i:s'),
                 'company_name' => $companyName,
                 'customer_email' => $customerEmail
             ], $cartItems, $pro ?? ['company_name' => $companyName, 'customer_email' => $customerEmail]);
-            
+
             $orderEmailSent = sendOrderEmailWithPdf($customerEmail, $companyName, $orderId, $pdfContent);
             $_SESSION['order_email_status'] = $orderEmailSent ? 'sent' : 'failed';
         } else {
@@ -220,6 +223,20 @@ if ($action === 'validate_order') {
                         value="<?= htmlspecialchars($customerEmail, ENT_QUOTES, 'UTF-8') ?>"
                         placeholder="achat@societe.com"
                     >
+                </label>
+                <label style="display: flex; align-items: flex-start; gap: 10px; margin: 1rem 0; cursor: pointer;">
+                    <input
+                        type="checkbox"
+                        name="certify_adult"
+                        value="1"
+                        required
+                        <?= !empty($_POST['certify_adult']) ? 'checked' : '' ?>
+                        style="width: auto; margin-top: 4px;"
+                    >
+                    <span>
+                        Je certifie être majeur(e) (18 ans révolus) et agir en qualité de professionnel.
+                        Je reconnais que les tarifs affichés sont indicatifs, exprimés en HT et non contractuels.
+                    </span>
                 </label>
                 <button type="submit" class="primary" <?= ($cartTotal < $minimumOrderAmount || count($cartItems) === 0) ? 'disabled' : '' ?>>
                     Valider la sélection

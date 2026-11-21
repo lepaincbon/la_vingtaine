@@ -4,7 +4,10 @@ declare(strict_types=1);
 $loadThreeScene = $loadThreeScene ?? false;
 ?>
 <footer class="footer">
-    <p>Livraison sous 3 à 5 jours ouvrés.</p>
+    <p class="health-warning" role="note">
+        <strong>L'abus d'alcool est dangereux pour la santé, à consommer avec modération.</strong>
+    </p>
+    <p>Les prix sont affichés à titre indicatif.</p>
     <p>
         <a href="https://www.instagram.com/" target="_blank" rel="noopener noreferrer">Instagram</a>
         •
