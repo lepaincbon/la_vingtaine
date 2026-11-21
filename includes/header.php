@@ -16,6 +16,24 @@ if (!isset($_SESSION['contact_requests_fallback']) || !is_array($_SESSION['conta
     $_SESSION['contact_requests_fallback'] = [];
 }
 
+/**
+ * Ajoute ?v=<date de modification> à une ressource statique.
+ * Le navigateur (surtout mobile) télécharge donc automatiquement la nouvelle
+ * version de style.css / nav.js dès qu'elle change, sans vider le cache.
+ */
+if (!function_exists('assetUrl')) {
+    function assetUrl(string $path): string
+    {
+        static $versions = [];
+        $path = ltrim($path, '/');
+        if (!isset($versions[$path])) {
+            $file = dirname(__DIR__) . '/' . $path;
+            $versions[$path] = is_file($file) ? (string)filemtime($file) : '1';
+        }
+        return $path . '?v=' . $versions[$path];
+    }
+}
+
 $cartBottleCount = 0;
 foreach ($_SESSION['cart'] as $cartLine) {
     $cartBottleCount += (int)($cartLine['qty'] ?? 0);
@@ -32,7 +50,7 @@ $currentPage = $currentPage ?? '';
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
     <meta name="theme-color" content="#f9f6f2">
     <meta name="format-detection" content="telephone=no">
-    <link rel="icon" type="image/svg+xml" href="assets/img/favicon.svg">
+    <link rel="icon" type="image/svg+xml" href="<?= htmlspecialchars(assetUrl('assets/img/favicon.svg'), ENT_QUOTES, 'UTF-8') ?>">
     <title><?= htmlspecialchars($pageTitle, ENT_QUOTES, 'UTF-8') ?></title>
     <meta name="description" content="<?= htmlspecialchars($pageDescription, ENT_QUOTES, 'UTF-8') ?>">
     <meta property="og:title" content="<?= htmlspecialchars($pageTitle, ENT_QUOTES, 'UTF-8') ?>">
@@ -41,10 +59,10 @@ $currentPage = $currentPage ?? '';
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,600;0,700;1,400&family=Inter:wght@300;400;500;600&display=swap">
-    <link rel="preload" as="style" href="assets/css/style.css">
+    <link rel="preload" as="style" href="<?= htmlspecialchars(assetUrl('assets/css/style.css'), ENT_QUOTES, 'UTF-8') ?>">
     <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,600;0,700;1,400&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet" media="print" onload="this.media='all'">
-    <link rel="stylesheet" href="assets/css/style.css">
-    <script src="assets/js/nav.js" defer></script>
+    <link rel="stylesheet" href="<?= htmlspecialchars(assetUrl('assets/css/style.css'), ENT_QUOTES, 'UTF-8') ?>">
+    <script src="<?= htmlspecialchars(assetUrl('assets/js/nav.js'), ENT_QUOTES, 'UTF-8') ?>" defer></script>
     <noscript>
         <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,600;0,700;1,400&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
     </noscript>

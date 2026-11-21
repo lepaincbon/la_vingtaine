@@ -17,6 +17,16 @@
   ExpiresByType application/json "access plus 1 month"
   ExpiresByType font/woff2 "access plus 1 year"
   ExpiresByType application/pdf "access plus 1 month"
+  # Le HTML est toujours revalidé : il pointe vers les assets versionnés (?v=...)
+  ExpiresByType text/html "access plus 0 seconds"
+</IfModule>
+
+# HTML : jamais mis en cache, pour récupérer immédiatement les nouveaux CSS/JS
+<IfModule mod_headers.c>
+  <FilesMatch "\.(php|html|htm)$">
+    Header set Cache-Control "no-cache, no-store, must-revalidate, max-age=0"
+    Header set Pragma "no-cache"
+  </FilesMatch>
 </IfModule>
 
 # Sécurité

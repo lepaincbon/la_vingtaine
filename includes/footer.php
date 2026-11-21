@@ -21,7 +21,7 @@ $loadThreeScene = $loadThreeScene ?? false;
   }
 }
 </script>
-<script type="module" src="assets/js/main.js" async></script>
+<script type="module" src="<?= htmlspecialchars(assetUrl('assets/js/main.js'), ENT_QUOTES, 'UTF-8') ?>" async></script>
 <?php endif; ?>
 </body>
 </html>
